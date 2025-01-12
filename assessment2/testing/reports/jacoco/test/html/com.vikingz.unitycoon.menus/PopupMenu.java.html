@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PopupMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.menus</a> &gt; <span class="el_source">PopupMenu.java</span></div><h1>PopupMenu.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.menus;
+
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.vikingz.unitycoon.global.GameGlobals;
+
+/**
+ * This is a generic PopupMenu class that can create user defined popups.
+ * This class has been refactored slightly, but mainly remains unchanged.
+ */
+public class PopupMenu extends Window {
+
+    // Skin for the popup
+    final Skin skin;
+
+    /**
+     * Creates a new Popup menu
+     * @param skin Skin for the menu
+     * @param Message Message to be displayed in the popup
+     */
+    public PopupMenu(Skin skin, String Message) {
+
+<span class="fc" id="L24">        super(&quot;&quot;, skin);</span>
+
+<span class="fc" id="L26">        this.setSize(700, 400);</span>
+<span class="fc" id="L27">        this.setModal(true);</span>
+<span class="fc" id="L28">        this.setMovable(false);</span>
+<span class="fc" id="L29">        this.setResizable(false);</span>
+
+<span class="fc" id="L31">        this.skin = skin;</span>
+<span class="fc" id="L32">        this.setBackground(GameGlobals.backGroundDrawable);</span>
+
+
+<span class="fc" id="L35">        Label message = new Label(Message, skin);</span>
+<span class="fc" id="L36">        this.add(message).colspan(2).padBottom(20).row();</span>
+
+<span class="fc" id="L38">        GameGlobals.TIME.setPaused(true);</span>
+
+<span class="fc" id="L40">    }</span>
+
+    /**
+     * Configures the 2 buttons that appear on the popup.
+     * @param leftRun Runnable that will be run if the left button is pressed
+     * @param leftText The text written on the left button
+     * @param rightRun Runnable that will be run if the right button is pressed
+     * @param rightText The text written on the right button
+     */
+    public void setupButtons(Runnable leftRun, String leftText, Runnable rightRun, String rightText){
+
+<span class="fc" id="L51">        TextButton leftBtn = new TextButton(leftText, skin);</span>
+<span class="fc" id="L52">        TextButton rightBtn = new TextButton(rightText, skin);</span>
+
+<span class="fc" id="L54">        this.add(leftBtn).pad(10);</span>
+<span class="fc" id="L55">        this.add(rightBtn).pad(10);</span>
+
+        // Created for yes - no game events
+
+<span class="fc" id="L59">        leftBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L62">                leftRun.run();</span>
+<span class="nc" id="L63">                PopupMenu.this.remove();</span>
+<span class="nc" id="L64">                GameGlobals.TIME.setPaused(false);</span>
+<span class="nc" id="L65">            }</span>
+        });
+
+<span class="fc" id="L68">        rightBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L71">                rightRun.run();</span>
+<span class="nc" id="L72">                PopupMenu.this.remove();</span>
+<span class="nc" id="L73">                GameGlobals.TIME.setPaused(false);</span>
+<span class="nc" id="L74">            }</span>
+        });
+<span class="fc" id="L76">    }</span>
+
+
+    /**
+     * Configures a close button for the popup.
+     */
+    public void setupClose(Runnable runnable){
+
+<span class="nc" id="L84">        TextButton closeButton = new TextButton(&quot;Close&quot;, skin);</span>
+
+<span class="nc" id="L86">        this.add(closeButton).colspan(2);</span>
+
+        // Created for game events with no choices
+
+<span class="nc" id="L90">        closeButton.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L93">                runnable.run();</span>
+<span class="nc" id="L94">                PopupMenu.this.remove();</span>
+<span class="nc" id="L95">                GameGlobals.TIME.setPaused(false);</span>
+<span class="nc" id="L96">            }</span>
+        });
+<span class="nc" id="L98">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

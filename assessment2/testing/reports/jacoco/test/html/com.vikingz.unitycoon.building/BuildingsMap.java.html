@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildingsMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.building</a> &gt; <span class="el_source">BuildingsMap.java</span></div><h1>BuildingsMap.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.building;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.vikingz.unitycoon.achievements.IndecisiveAchievement;
+import com.vikingz.unitycoon.building.buildings.AcademicBuilding;
+import com.vikingz.unitycoon.building.buildings.AccommodationBuilding;
+import com.vikingz.unitycoon.building.buildings.FoodBuilding;
+import com.vikingz.unitycoon.building.buildings.RecreationalBuilding;
+import com.vikingz.unitycoon.global.GameGlobals;
+import com.vikingz.unitycoon.render.BackgroundRenderer;
+
+/**
+ * This new class is used to store and manage the placed buildings.
+ * This has been added to help with organisation of code.
+ */
+public class BuildingsMap {
+
+    final List&lt;Building&gt; placedBuildings;
+
+    // Used by check collision routine to check collision with background
+    final BackgroundRenderer backgroundRenderer;
+
+<span class="fc" id="L28">    public BuildingsMap(BackgroundRenderer backgroundRenderer) {</span>
+<span class="fc" id="L29">        placedBuildings = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L30">        this.backgroundRenderer = backgroundRenderer;</span>
+<span class="fc" id="L31">    }</span>
+
+    public List&lt;Building&gt; getPlacedBuildings() {
+<span class="fc" id="L34">        return placedBuildings;</span>
+    }
+
+    /**
+     * Returns a random building from the list of placed buildings.
+     * This new method was added to help complete UR_EVENTS.
+     * @return Building chosen.
+     */
+    public Building chooseRandomBuilding() {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (placedBuildings.size() == 0) {</span>
+<span class="fc" id="L44">            return null;</span>
+        }
+        
+<span class="fc" id="L47">        Random rand = new Random();</span>
+<span class="fc" id="L48">        int buildingIndex = rand.nextInt(0,placedBuildings.size());</span>
+<span class="fc" id="L49">        return placedBuildings.get(buildingIndex);</span>
+    }
+
+    /**
+     * Attempt to add a new building to the map. This method handles checking collision information 
+     * and funds.
+     * @param buildingInfo info of building to add.
+     * @param buildingTexture texture of building to add.
+     * @param x x-coordinate of position to add building to.
+     * @param y y-coordinate of position to add building to.
+     * @return List&lt;Building&gt; Empty if unsuccessful. Contains placed building otherwise.
+     */
+    public List&lt;Building&gt; attemptAddBuilding(BuildingInfo buildingInfo, TextureRegion buildingTexture, 
+            float x, float y) {
+<span class="nc" id="L63">        return attemptAddBuilding(buildingInfo, buildingTexture, x, y, false);</span>
+    }
+
+    /**
+     * Attempt to add a new building to the map. This method handles checking collision information
+     * and funds.
+     * This new function was added to allow buildings to be placed and pricing to be ignored for 
+     * testing.
+     * The original function was also refactored to allow new satisfaction and money handlers to be 
+     * used. This helps with FR_SATISFACTION and FR_STUDENT_FINANCE.
+     * @param buildingInfo info of building to add.
+     * @param buildingTexture texture of building to add.
+     * @param x x-coordinate of position to add building to.
+     * @param y y-coordinate of position to add building to.
+     * @param ignoreCost Used for testing to ignore any tests related to cost.
+     * @return List&lt;Building&gt; Empty if unsuccessful. Contains placed building otherwise.
+     */
+    public List&lt;Building&gt; attemptAddBuilding(BuildingInfo buildingInfo, TextureRegion buildingTexture, 
+            float x, float y, boolean ignoreCost) {
+<span class="fc" id="L82">        List&lt;Building&gt; addedBuildings = new LinkedList&lt;&gt;();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (checkCollisions(x, y)) {</span>
+            // Check if the user has enough money to buy that building
+<span class="fc bfc" id="L85" title="All 4 branches covered.">            if (!ignoreCost &amp;&amp; !BuildingStats.nextBuildingFree) {</span>
+                // Check that user is able to withdraw funds to build building
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">                if (!GameGlobals.MONEY.withdraw(buildingInfo.getBuildingCost())) {</span>
+<span class="nc" id="L88">                    return addedBuildings;  // Added buildings will simply be empty at this point</span>
+                }
+            }
+
+            // Ensures next building is not free.
+<span class="fc" id="L93">            BuildingStats.nextBuildingFree = false;</span>
+
+            // Adds a building of the correct type to the list of buildings that are to be drawn 
+            // to the screen.
+<span class="pc bpc" id="L97" title="1 of 5 branches missed.">            switch (buildingInfo.getBuildingType()) {</span>
+                case ACADEMIC:
+<span class="fc" id="L99">                    addedBuildings.add(addPlacedBuilding(new AcademicBuilding(buildingTexture, x, y, </span>
+<span class="fc" id="L100">                        buildingInfo, buildingInfo.getCoinsPerSecond())));</span>
+<span class="fc" id="L101">                    break;</span>
+
+                case ACCOMODATION:
+<span class="fc" id="L104">                    addedBuildings.add(addPlacedBuilding(new AccommodationBuilding(buildingTexture, x, y, </span>
+<span class="fc" id="L105">                        buildingInfo, buildingInfo.getCoinsPerSecond())));</span>
+<span class="fc" id="L106">                    break;</span>
+
+                case RECREATIONAL:
+<span class="fc" id="L109">                    addedBuildings.add(addPlacedBuilding(new RecreationalBuilding(buildingTexture, x, y, </span>
+<span class="fc" id="L110">                        buildingInfo, buildingInfo.getCoinsPerSecond())));</span>
+<span class="fc" id="L111">                    break;</span>
+
+                case FOOD:
+<span class="fc" id="L114">                    addedBuildings.add(addPlacedBuilding(new FoodBuilding(buildingTexture, x, y, buildingInfo, </span>
+<span class="fc" id="L115">                        buildingInfo.getCoinsPerSecond())));</span>
+<span class="fc" id="L116">                    break;</span>
+
+                default:
+                    break;
+            }
+        }
+
+<span class="fc" id="L123">        return addedBuildings;</span>
+    }
+
+    /**
+     * Updates stats to reflect building being built.
+     * This new function was added to allow a delay between the user buying a building and that building
+     * havingh affects on the game. This was to help with FR_BUILD_TIME.
+     * @param building Building which has finished building.
+     */
+    public void builtBuilding(Building building) {
+<span class="fc" id="L133">        GameGlobals.STUDENTS += building.getBuildingInfo().getNumberOfStudents();</span>
+<span class="fc" id="L134">        incrementBuildingsCount(building.getBuildingInfo().getBuildingType());</span>
+<span class="fc" id="L135">        GameGlobals.SATISFACTION.recalculateSatisfaction(getPlacedBuildings());</span>
+<span class="fc" id="L136">    }</span>
+
+    /**
+     * Adds a new building to the list of placed buildings by y coordinate rendered in the correct order. 
+     * This new method ensures buildings placed infront are displayed infront.
+     */
+    public Building addPlacedBuilding(Building newBuilding) {
+<span class="fc" id="L143">        boolean isadded = false;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (int i = 0; i &lt; placedBuildings.size(); i++) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            if (placedBuildings.get(i).getY() &lt; newBuilding.getY()) {</span>
+<span class="fc" id="L146">                placedBuildings.add(i, newBuilding);</span>
+<span class="fc" id="L147">                isadded = true;</span>
+<span class="fc" id="L148">                break;</span>
+            }
+        }
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        if (!isadded) {</span>
+<span class="fc" id="L152">            placedBuildings.add(newBuilding);</span>
+        }
+
+<span class="fc" id="L155">        return newBuilding;</span>
+    }
+
+    /**
+     * Attempt to remove a building from the list of placed buildings.
+     * This method was refactored to allow new satisfaction and money handlers to be used. 
+     * This helped to complete FR_SATISFACTION and FR_STUDENT_FINANCE.
+     * @param toRemove Building object to remove
+     * @return List&lt;Building&gt;. Empty if unsuccessful, otherwise contains the removed building
+     */
+    public List&lt;Building&gt; attemptBuildingDelete(Building toRemove) {
+<span class="fc" id="L166">        List&lt;Building&gt; removed = new LinkedList&lt;&gt;();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (toRemove != null) {</span>
+<span class="fc" id="L168">            BuildingInfo buildingInfo = toRemove.getBuildingInfo();</span>
+<span class="fc" id="L169">            placedBuildings.remove(toRemove);</span>
+<span class="fc" id="L170">            GameGlobals.MONEY.deposit(Math.round(buildingInfo.getBuildingCost()*0.75f));</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            if (!toRemove.getConstructing()) {</span>
+<span class="fc" id="L172">                GameGlobals.STUDENTS -= buildingInfo.getNumberOfStudents();</span>
+<span class="fc" id="L173">                decrementBuildingsCount(buildingInfo.getBuildingType());</span>
+            }
+<span class="fc" id="L175">            removed.add(toRemove);</span>
+<span class="fc" id="L176">            GameGlobals.SATISFACTION.recalculateSatisfaction(getPlacedBuildings());</span>
+        }
+
+<span class="fc" id="L179">        return removed;</span>
+    }
+
+    /**
+     * Attempt to delete a building from the map at the specified coordinates.
+     * It is important coordinates have been translated into game coordinates.
+     * @param gameX
+     * @param gameY
+     * @return List&lt;Building&gt;. Empty if uncessful, otherwise contains the removed buidling.
+     */
+    public List&lt;Building&gt; attemptBuildingDeleteAt(float gameX, float gameY) {
+<span class="fc" id="L190">        Building toRemove = getBuildingAtPoint(gameX, gameY);</span>
+<span class="fc" id="L191">        return attemptBuildingDelete(toRemove);</span>
+    }
+
+    /**
+     * Gets the building at the specified point
+     * @param x Mouse X
+     * @param y Mouse Y
+     * @return Building that was at the coords
+     */
+    public Building getBuildingAtPoint(float x, float y){
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        for (Building building: this.placedBuildings) {</span>
+<span class="fc" id="L202">            float bx = building.getX();</span>
+<span class="fc" id="L203">            float by = building.getY();</span>
+
+<span class="fc bfc" id="L205" title="All 6 branches covered.">            if(  (x &gt; bx &amp;&amp; x &lt; (bx + building.getWidth())) &amp;&amp;</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">                 (y &gt; by &amp;&amp; y &lt; (by + building.getHeight())) ){</span>
+<span class="fc" id="L207">                    return building;</span>
+            }
+<span class="fc" id="L209">        }</span>
+<span class="fc" id="L210">        return null;</span>
+    }
+
+    /**
+     * Checks whether the user is trying to place a building on another building or not on grass.
+     * @param x X
+     * @param y Y
+     * @return false if there exists a building at the spot the user is trying to place the building
+     *          at or if non grass is present in the buildings spot.
+     */
+    private boolean checkCollisions(float x, float y){
+        //Checks building exists in spot
+<span class="fc" id="L222">        float RoundedX = Math.round(x);</span>
+<span class="fc" id="L223">        float RoundedY = Math.round(y);</span>
+
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        if (!checkCollisionBuildings(RoundedX, RoundedY)) { return false; }</span>
+
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        if (!checkCollisionBackground(RoundedX, RoundedY)) { return false; }</span>
+
+<span class="fc" id="L229">        return true;</span>
+    }
+
+    /**
+     * Checks placement is permitted based purely on other buildings.
+     * This method was refactored to prevent buildings colliding unnecessarily with each other.
+     * @param roundedX
+     * @param roundedY
+     * @return true if placement allowed, false otherwise
+     */
+    private boolean checkCollisionBuildings(float roundedX, float roundedY) {
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (Building building: this.placedBuildings) {</span>
+             //Only check collision for base of building(3/4 of the way up)
+<span class="fc bfc" id="L242" title="All 2 branches covered.">            if ((roundedX &gt; (building.getX() - GameGlobals.SCREEN_BUILDING_SIZE) &amp;&amp; </span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">                    roundedX &lt; (building.getX() + GameGlobals.SCREEN_BUILDING_SIZE)) &amp;&amp;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">                    (roundedY &gt; (building.getY() - GameGlobals.SCREEN_BUILDING_SIZE * 3/4) &amp;&amp;  </span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">                    roundedY &lt; (building.getY() + GameGlobals.SCREEN_BUILDING_SIZE * 3/4))) {</span>
+<span class="fc" id="L246">                return false;</span>
+            }
+<span class="fc" id="L248">        }</span>
+
+<span class="fc" id="L250">        return true;</span>
+    }
+
+    /**
+     * Checks whether a placement is allowed based on the background texture.
+     * This method was refactored to prevent buildings colliding unnecessarily with obstacles.
+     * @param roundedX
+     * @param roundedY
+     * @return true if placement is allowed, false otherwise.
+     */
+    private boolean checkCollisionBackground(float roundedX, float roundedY) {
+<span class="fc" id="L261">        String hold = backgroundRenderer.getMap();</span>
+
+        //CheckTiles on the ground are grassBlocks
+<span class="fc" id="L264">        int yIndexLow = Math.round(((roundedY-64)/32)) + 3;</span>
+<span class="fc" id="L265">        int xIndexLow = Math.round((roundedX-64)/32) + 2;</span>
+<span class="fc" id="L266">        int lengthTiles = hold.split(&quot;\n&quot;).length;</span>
+<span class="fc" id="L267">        char[][] TileSet = new char[3][4]; //Only check collision for base of building(3/4 of the way up)</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">        for (int yCord=0;yCord&lt;3;yCord++){</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">            for (int xCord=0;xCord&lt;4;xCord++){</span>
+                try {
+<span class="fc" id="L271">                    TileSet[yCord][xCord] = hold.split(&quot;\n&quot;)[lengthTiles - (yIndexLow + yCord)].charAt(</span>
+                        xIndexLow + xCord);
+<span class="fc" id="L273">                }catch (Exception ignored){}</span>
+            }
+        }
+
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        for (char[] itemI: TileSet) {</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">            for (char itemJ: itemI) {</span>
+<span class="fc bfc" id="L279" title="All 4 branches covered.">                if (itemJ != backgroundRenderer.getGRASS() &amp;&amp; itemJ != backgroundRenderer.getGRASS2()) {</span>
+<span class="fc" id="L280">                    return false;</span>
+                }
+            }
+        }
+
+<span class="fc" id="L285">        return true;</span>
+    }
+
+    /**
+     * Increments the counter on the screen for the corresponding building that has been placed down.
+     * @param type Type of the building that has been added
+     */
+    private void incrementBuildingsCount(BuildingStats.BuildingType type){
+
+<span class="pc bpc" id="L294" title="1 of 5 branches missed.">        switch (type) {</span>
+<span class="fc" id="L295">                case ACADEMIC -&gt; GameGlobals.ACADEMIC_BUILDINGS_COUNT++;</span>
+<span class="fc" id="L296">                case ACCOMODATION -&gt; GameGlobals.ACCOMODATION_BUILDINGS_COUNT++;</span>
+<span class="fc" id="L297">                case RECREATIONAL -&gt; GameGlobals.RECREATIONAL_BUILDINGS_COUNT++;</span>
+<span class="fc" id="L298">                case FOOD -&gt; GameGlobals.FOOD_BUILDINGS_COUNT++;</span>
+<span class="nc" id="L299">                default -&gt; throw new IllegalArgumentException(&quot;Unexpected value: &quot; + type);</span>
+        }
+<span class="fc" id="L301">    }</span>
+
+    /**
+     * Increments the counter on the screen for the corresponding building that has been placed down.
+     * @param type Type of the building that has been added
+     */
+    private void decrementBuildingsCount(BuildingStats.BuildingType type){
+
+<span class="pc bpc" id="L309" title="1 of 5 branches missed.">        switch (type) {</span>
+<span class="fc" id="L310">            case ACADEMIC -&gt; GameGlobals.ACADEMIC_BUILDINGS_COUNT--;</span>
+<span class="fc" id="L311">            case ACCOMODATION -&gt; GameGlobals.ACCOMODATION_BUILDINGS_COUNT--;</span>
+<span class="fc" id="L312">            case RECREATIONAL -&gt; GameGlobals.RECREATIONAL_BUILDINGS_COUNT--;</span>
+<span class="fc" id="L313">            case FOOD -&gt; GameGlobals.FOOD_BUILDINGS_COUNT--;</span>
+<span class="nc" id="L314">            default -&gt; throw new IllegalArgumentException(&quot;Unexpected value: &quot; + type);</span>
+        }
+
+<span class="fc" id="L317">        IndecisiveAchievement indecisiveAchievement = (IndecisiveAchievement)( </span>
+<span class="fc" id="L318">            GameGlobals.ACHIEVEMENTS.getAchievement(IndecisiveAchievement.NAME));</span>
+<span class="fc" id="L319">        indecisiveAchievement.incrementRemovedBuildings();</span>
+<span class="fc" id="L320">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

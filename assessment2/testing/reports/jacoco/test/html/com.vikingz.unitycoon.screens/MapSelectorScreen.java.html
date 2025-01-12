@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MapSelectorScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.screens</a> &gt; <span class="el_source">MapSelectorScreen.java</span></div><h1>MapSelectorScreen.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.screens;
+
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.vikingz.unitycoon.global.GameGlobals;
+
+/**
+ * This class represents the screen where the user chooses the map they want to play.
+ *
+ * This class contains a bunch of buttons that allow the user to cycle through the different maps available 
+ * as well as go back to the main menu or play game.
+ *
+ * Inherits Screen, SuperScreen
+ * 
+ * This class has been refactored slightly to make the code more readable and improve UI.
+ */
+public class MapSelectorScreen extends SuperScreen implements Screen {
+
+    //Text that shows which map is currently selected
+    final TextField mapText;
+
+    //List of map Image that are used to set the preview image
+    final TextureRegionDrawable[] mapArray;
+
+    //Current map Selected
+<span class="nc" id="L34">    private int mapSelection = 1;</span>
+
+    /**
+     * Creates a new Map selector screen
+     */
+    public MapSelectorScreen() {
+<span class="nc" id="L40">        super();</span>
+
+        //Loads maps from global config
+<span class="nc" id="L43">        mapArray = GameGlobals.mapArray;</span>
+
+<span class="nc" id="L45">        TextButton goBack = new TextButton(&quot;Go Back&quot;,skin);</span>
+<span class="nc" id="L46">        TextButton startGame = new TextButton(&quot;Start Game&quot;,skin);</span>
+<span class="nc" id="L47">        TextButton nextMap = new TextButton(&quot;-&gt;&quot;,skin);</span>
+<span class="nc" id="L48">        TextButton previousMap = new TextButton(&quot;&lt;-&quot;,skin);</span>
+
+        //Go back Button
+<span class="nc" id="L51">        goBack.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L54">                ScreenMultiplexer.switchScreens(ScreenMultiplexer.Screens.MENU);</span>
+<span class="nc" id="L55">            };</span>
+        });
+
+
+<span class="nc" id="L59">        Image mapImage = new Image(GameGlobals.map1Texture);</span>
+
+        //Selects the next map
+<span class="nc" id="L62">        nextMap.addListener(new InputListener(){</span>
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+<span class="nc" id="L65">                mapSelection++;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                if (mapSelection &gt; 3) {</span>
+<span class="nc" id="L67">                    mapSelection = 1;</span>
+                }
+<span class="nc" id="L69">                mapImage.setDrawable(mapArray[mapSelection-1]);</span>
+<span class="nc" id="L70">                return true;</span>
+            }
+        });
+
+
+        //Selects the previous map
+<span class="nc" id="L76">        previousMap.addListener(new InputListener(){</span>
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+<span class="nc" id="L79">                mapSelection--;</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">                if (mapSelection &lt; 1){</span>
+<span class="nc" id="L81">                    mapSelection = mapArray.length;</span>
+                }
+<span class="nc" id="L83">                mapImage.setDrawable(mapArray[mapSelection-1]);</span>
+<span class="nc" id="L84">                return true;</span>
+            }
+        });
+
+
+<span class="nc" id="L89">        mapText = new TextField(&quot;map&quot;.concat(Integer.toString(mapSelection)),skin);</span>
+
+        //Starts the game
+<span class="nc" id="L92">        startGame.addListener(new ClickListener() {</span>
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L96">                ScreenMultiplexer.runGame(mapText.getText().toLowerCase());</span>
+<span class="nc" id="L97">            };</span>
+        });
+
+        // Create table for layout
+<span class="nc" id="L101">        Table table = new Table();</span>
+<span class="nc" id="L102">        table.setFillParent(true);</span>
+<span class="nc" id="L103">        table.center();</span>
+
+<span class="nc" id="L105">        table.add((Actor) null);</span>
+<span class="nc" id="L106">        table.add(mapImage).width(300).height(350).pad(10);</span>
+
+<span class="nc" id="L108">        table.row();</span>
+
+<span class="nc" id="L110">        table.add(previousMap).pad(10);</span>
+<span class="nc" id="L111">        table.add(mapText).pad(10);</span>
+<span class="nc" id="L112">        table.add(nextMap).pad(10);</span>
+<span class="nc" id="L113">        table.row();</span>
+<span class="nc" id="L114">        table.row();</span>
+
+<span class="nc" id="L116">        table.add(goBack).pad(10);</span>
+<span class="nc" id="L117">        table.add((Actor) null);</span>
+<span class="nc" id="L118">        table.add(startGame).pad(10);</span>
+
+        // Add the table to the stage
+<span class="nc" id="L121">        stage.addActor(table);</span>
+<span class="nc" id="L122">    }</span>
+
+    @Override
+<span class="nc" id="L125">    public void show() {}</span>
+
+    /**
+     * Renders the stage to the screen
+     * @param delta Time since last frame
+     */
+    @Override
+    public void render(float delta) {
+        // Clear the screen
+<span class="nc" id="L134">        Gdx.gl.glClearColor(25/255f, 25/255f, 25/255f, 1);</span>
+<span class="nc" id="L135">        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);</span>
+<span class="nc" id="L136">        mapText.setText(&quot;Map&quot;.concat(Integer.toString(mapSelection)));</span>
+
+<span class="nc" id="L138">        stage.act(delta);</span>
+<span class="nc" id="L139">        stage.draw();</span>
+<span class="nc" id="L140">    }</span>
+
+
+    /**
+     * Updates the viewport when the window is resized
+     * @param width New width
+     * @param height New height
+     */
+    @Override
+    public void resize(int width, int height) {
+<span class="nc" id="L150">        stage.getViewport().update(width, height, true);</span>
+<span class="nc" id="L151">    }</span>
+
+    @Override
+<span class="nc" id="L154">    public void pause() { }</span>
+
+    @Override
+<span class="nc" id="L157">    public void resume() { }</span>
+
+    @Override
+<span class="nc" id="L160">    public void hide() { }</span>
+
+    /**
+     * Disposes MapScreen for garbage collection.
+     */
+    @Override
+    public void dispose() {
+        // Dispose of resources
+<span class="nc" id="L168">        stage.dispose();</span>
+<span class="nc" id="L169">        skin.dispose();</span>
+<span class="nc" id="L170">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

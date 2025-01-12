@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EndMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.menus</a> &gt; <span class="el_source">EndMenu.java</span></div><h1>EndMenu.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.menus;
+
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
+import com.vikingz.unitycoon.global.GameGlobals;
+
+/**
+ * This class is the menu that pops up at the end of the game.
+ * This menu contains a quit button that sends the user back to the main menu as well as a continue 
+ * button that lets the user continue the game.
+ * 
+ * This menu was refactored to meet FR_END_SCREEN and FR_WIN.
+ */
+public class EndMenu extends Window {
+
+    Label titleLabel;
+    Label messageLabel;
+
+    //skin used for window
+    final Skin skin;
+
+    /**
+     * Creates a new EndMenu
+     * @param skin The skin used to style the popup
+     * @param Message The message that will be shown on the popup
+     */
+    public EndMenu(Skin skin, String Message) {
+
+<span class="nc" id="L31">        super(&quot;&quot;, skin);</span>
+
+<span class="nc" id="L33">        this.setSize(1000, 600);</span>
+<span class="nc" id="L34">        this.setModal(true);</span>
+<span class="nc" id="L35">        this.setMovable(false);</span>
+<span class="nc" id="L36">        this.setResizable(false);</span>
+
+<span class="nc" id="L38">        this.skin = skin;</span>
+<span class="nc" id="L39">        this.setBackground(GameGlobals.backGroundDrawable);</span>
+
+<span class="nc" id="L41">        titleLabel = new Label(&quot;&quot;, skin);</span>
+<span class="nc" id="L42">        titleLabel.setFontScale(3);</span>
+<span class="nc" id="L43">        this.add(titleLabel).row();</span>
+
+<span class="nc" id="L45">        messageLabel = new Label(Message, skin);</span>
+<span class="nc" id="L46">        messageLabel.setFontScale(2);</span>
+<span class="nc" id="L47">        this.add(messageLabel).align(Align.left).row();</span>
+<span class="nc" id="L48">    }</span>
+
+    /**
+     * Crates the buttons Left and Right, sets the actions and text of each button.
+     * @param leftRun contains function to be run on click for left button
+     * @param leftText contains text for the left button
+     * @param rightRun contains function to be run on click for right button
+     * @param rightText contains text for the right button
+     */
+    public void setupButtons(Runnable leftRun, String leftText, Runnable rightRun, String rightText){
+
+<span class="nc" id="L59">        TextButton leftBtn = new TextButton(leftText, skin);</span>
+<span class="nc" id="L60">        TextButton rightBtn = new TextButton(rightText, skin);</span>
+<span class="nc" id="L61">        Table table = new Table();</span>
+
+<span class="nc" id="L63">        table.add(leftBtn).pad(10);</span>
+<span class="nc" id="L64">        table.add(rightBtn).pad(10);</span>
+<span class="nc" id="L65">        this.add(table);</span>
+
+        // Created for yes - no game events
+        // The Popup needs to call back to parent object in someway
+
+<span class="nc" id="L70">        leftBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L73">                leftRun.run();</span>
+<span class="nc" id="L74">            }</span>
+        });
+
+<span class="nc" id="L77">        rightBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L80">                rightRun.run();</span>
+<span class="nc" id="L81">            }</span>
+        });
+<span class="nc" id="L83">    }</span>
+
+    public void setMessage(String message) {
+<span class="nc" id="L86">        messageLabel.setText(message);</span>
+<span class="nc" id="L87">    }</span>
+
+    public void setTitle(String title) {
+<span class="nc" id="L90">        titleLabel.setText(title);</span>
+<span class="nc" id="L91">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

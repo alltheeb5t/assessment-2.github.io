@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TutorialMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.menus</a> &gt; <span class="el_source">TutorialMenu.java</span></div><h1>TutorialMenu.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.menus;
+
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.vikingz.unitycoon.global.GameGlobals;
+
+/**
+ * This class creates a Menu that pops up with the game rules.
+ * This new class was added to meet FR_TUTORIAL.
+ */
+public class TutorialMenu extends Window  {
+
+<span class="nc" id="L17">    private String title = &quot;How To Play&quot;;</span>
+    private Label titleLabel;
+    
+<span class="nc" id="L20">    private String message = &quot;Build the campus of your dreams and keep your students happy &quot;</span>
+        + &quot;by buying and placing a range \nof facilities from the menu.\n\nControls: &quot;
+        + &quot;\nPause Game - esc key \nRemove Building/Stop Placing Building - right click&quot;
+        + &quot;\n\nTry to reach 100% satisfaction without ending up in debt before the end of semester&quot; 
+        + &quot; 2 in year 3. \nSatisfaction is influenced by building amounts and proximities.&quot;
+        + &quot;\n\nPlease use the built in full screen method in the settings page.\n\nGood luck!&quot;;
+    private Label messageLabel;
+
+    public TutorialMenu (Skin skin) {
+        
+<span class="nc" id="L30">        super(&quot;&quot;, skin);</span>
+
+<span class="nc" id="L32">        this.setSize(900, 500);</span>
+<span class="nc" id="L33">        this.setModal(true);</span>
+<span class="nc" id="L34">        this.setMovable(false);</span>
+<span class="nc" id="L35">        this.setResizable(false);</span>
+
+<span class="nc" id="L37">        this.setBackground(GameGlobals.backGroundDrawable);</span>
+
+<span class="nc" id="L39">        titleLabel = new Label(title, skin);</span>
+<span class="nc" id="L40">        titleLabel.setFontScale(3);</span>
+<span class="nc" id="L41">        this.add(titleLabel).padTop(1).row();</span>
+
+<span class="nc" id="L43">        messageLabel = new Label(message, skin);</span>
+<span class="nc" id="L44">        this.add(messageLabel).padBottom(10).row();</span>
+<span class="nc" id="L45">    }</span>
+
+    /**
+     * Configures the button that appears on the popup.
+     */
+    public void setupButton(Skin skin){
+
+<span class="nc" id="L52">        TextButton leftBtn = new TextButton(&quot;Close&quot;, skin);</span>
+<span class="nc" id="L53">        this.add(leftBtn).pad(10);</span>
+
+<span class="nc" id="L55">        leftBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L58">                TutorialMenu.this.remove();</span>
+<span class="nc" id="L59">            }</span>
+        });
+<span class="nc" id="L61">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

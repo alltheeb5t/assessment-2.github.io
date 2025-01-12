@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildingRenderer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.render</a> &gt; <span class="el_source">BuildingRenderer.java</span></div><h1>BuildingRenderer.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.render;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.vikingz.unitycoon.achievements.SaviourAchievement;
+import com.vikingz.unitycoon.building.Building;
+import com.vikingz.unitycoon.building.BuildingInfo;
+import com.vikingz.unitycoon.building.BuildingStats;
+import com.vikingz.unitycoon.global.GameGlobals;
+import com.vikingz.unitycoon.menus.RemoveBuildingMenu;
+import com.vikingz.unitycoon.util.GameSounds;
+
+/**
+ * This class is in charge of drawing Buildings in the game.
+ *
+ * This class also does the collision calculations for buildings
+ * which make sure that the user is unable to place buildings on top
+ * of each other, as well as using right click to be able to remove the
+ * buildings from the game.
+ * 
+ * This class has been refactored to make the code more readable and too add new UI_features
+ * following the user evaluation.
+ */
+public class BuildingRenderer{
+
+    // Used to draw buildings textures.
+    final SpriteBatch batch;
+
+    // Used to display removeBuildingMenu on the UIRenderer stage.
+    // This allows the user to interact with buttons on the menu.
+    Stage UIStage;
+
+    // X and Y values used to place buildings.
+    float previewX, previewY;
+
+    // If building is being placed by user.
+    boolean isPreviewing;
+
+    // Prevents building being placed and menu opening in the same click.
+    boolean openMenu;
+
+    // Textures of Building, fire and construction.
+    TextureRegion selectedTexture;
+<span class="nc" id="L57">    Texture underConstructionTexture = new Texture(&quot;png\\UnderConstruction.png&quot;);</span>
+<span class="nc" id="L58">    Texture fireTexture = new Texture(&quot;png\\fire.png&quot;);</span>
+
+    // Current Building being placed information.
+<span class="nc" id="L61">    BuildingInfo currentBuildingInfo = null;</span>
+
+    // GameRender used to get mouse position and background tiles.
+    final GameRenderer gameRenderer;
+
+    // Checks if the user wants to delete a building.
+    RemoveBuildingMenu removeBuildingPopUp;
+
+    // Pop Up when a player tries to place a building on a colliding square.
+    TextButton collisionPopUp;
+
+    /**
+     * Creates a new Building Renderer
+     * @param gameRenderer Parent renderer {@code GameRenderer}
+     * @param skin Used to display building popups
+     */
+<span class="nc" id="L77">    public BuildingRenderer(GameRenderer gameRenderer, Skin skin) {</span>
+
+<span class="nc" id="L79">        this.gameRenderer = gameRenderer;</span>
+        
+        // Initialised as a blank stage initially as UIRenderer is initialised later
+<span class="nc" id="L82">        UIStage = new Stage();</span>
+<span class="nc" id="L83">        batch = new SpriteBatch();</span>
+<span class="nc" id="L84">        isPreviewing = false;</span>
+<span class="nc" id="L85">        selectedTexture = null;</span>
+<span class="nc" id="L86">        openMenu = true;</span>
+
+<span class="nc" id="L88">        removeBuildingPopUp = new RemoveBuildingMenu(skin);</span>
+
+<span class="nc" id="L90">        BuildingStats.nextBuildingFree = false;</span>
+
+        // Set collision popup
+<span class="nc" id="L93">        collisionPopUp = new TextButton(&quot;Unable to place building here&quot;, skin);</span>
+<span class="nc" id="L94">        collisionPopUp.setColor(Color.RED);</span>
+<span class="nc" id="L95">        collisionPopUp.setWidth(350);</span>
+<span class="nc" id="L96">        collisionPopUp.setPosition((UIStage.getWidth() - collisionPopUp.getWidth()) / 2, </span>
+<span class="nc" id="L97">            (UIStage.getHeight() - 100));</span>
+<span class="nc" id="L98">        collisionPopUp.getLabel().setFontScale((float)0.4,(float)0.4);</span>
+<span class="nc" id="L99">    }</span>
+
+    /**
+     * Renders buildings
+     * @param delta Time since last frame
+     */
+    public void render(float delta) {
+<span class="nc" id="L106">        checkBuildings(delta);</span>
+<span class="nc" id="L107">    }</span>
+
+    /**
+     * Checks if the user is currently adding or removing buildings.
+     * This method has been refactored to complete FR_BUILD_TIME and UR_EVENTS
+     * @param delta Time since last frame
+     */
+    private void checkBuildings(float delta){
+        //Stops previewing building and background building being removed at once.
+<span class="nc" id="L116">        Boolean removedPreviewing = false;</span>
+
+        // Update preview position to follow the mouse cursor
+<span class="nc bnc" id="L119" title="All 4 branches missed.">        if (isPreviewing &amp;&amp; selectedTexture != null) {</span>
+            // Stops previewing building if user right clicks
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){</span>
+<span class="nc" id="L122">                isPreviewing = false;</span>
+<span class="nc" id="L123">                selectedTexture = null;</span>
+<span class="nc" id="L124">                removedPreviewing = true;</span>
+            }
+
+            // Makes sure that the mouse is in the center of the building texture
+<span class="nc" id="L128">            Vector3 previewPoint = snapBuildingToGrid(Gdx.input.getX() - </span>
+<span class="nc" id="L129">                GameGlobals.SCREEN_BUILDING_SIZE / 3, Gdx.input.getY() + </span>
+                GameGlobals.SCREEN_BUILDING_SIZE / 3);
+
+<span class="nc" id="L132">            previewX = previewPoint.x;</span>
+<span class="nc" id="L133">            previewY = previewPoint.y;</span>
+        }
+
+<span class="nc" id="L136">        batch.begin();</span>
+
+        // Draw all placed textures
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        for (Building building : GameGlobals.BUILDINGS_MAP.getPlacedBuildings()) {</span>
+<span class="nc" id="L140">            batch.draw(building.getTexture(), building.getX(), building.getY());</span>
+            // Checks if building is under construction
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            if (building.getConstructing()) {</span>
+<span class="nc" id="L143">                batch.draw(underConstructionTexture, building.getX(), </span>
+<span class="nc" id="L144">                    building.getY(), GameGlobals.SCREEN_BUILDING_SIZE, </span>
+                        (int) (GameGlobals.SCREEN_BUILDING_SIZE * 0.75));
+
+                // Starts or stops timer if needed, doesn't place building if not currently building 
+                //buildings.
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                if (building.getEndConstructionTime() == -1) {</span>
+<span class="nc" id="L150">                    building.setEndConstructionTime(GameGlobals.TIME_REMAINING - 10);</span>
+                }
+<span class="nc bnc" id="L152" title="All 4 branches missed.">                else if(building.getEndConstructionTime() &gt;= GameGlobals.TIME_REMAINING &amp;&amp; </span>
+                    GameGlobals.buildingAllowed) {
+<span class="nc" id="L154">                    building.setConstructing(false);</span>
+<span class="nc" id="L155">                    GameGlobals.BUILDINGS_MAP.builtBuilding(building);</span>
+                }
+
+                // Adds the passed time to the end construction time if not currently building buildings.
+<span class="nc bnc" id="L159" title="All 2 branches missed.">                if (!GameGlobals.buildingAllowed) {</span>
+<span class="nc" id="L160">                    building.updateEndConstructionTime(delta);</span>
+                }
+            }
+            // Draws fire texture on building if on fire
+<span class="nc bnc" id="L164" title="All 2 branches missed.">            if(building.getOnFire()) {</span>
+<span class="nc" id="L165">                batch.draw(fireTexture, building.getX(),</span>
+<span class="nc" id="L166">                    building.getY(), GameGlobals.SCREEN_BUILDING_SIZE, GameGlobals.SCREEN_BUILDING_SIZE);</span>
+            }
+<span class="nc" id="L168">        }</span>
+
+        // Draw the preview texture if one is selected
+<span class="nc bnc" id="L171" title="All 4 branches missed.">        if (isPreviewing &amp;&amp; selectedTexture != null) {</span>
+<span class="nc" id="L172">            batch.draw(selectedTexture, previewX, previewY);</span>
+        }
+
+<span class="nc" id="L175">        batch.end();</span>
+
+        // Removes the building the user right clicks on
+<span class="nc bnc" id="L178" title="All 4 branches missed.">        if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT) &amp;&amp; !removedPreviewing){</span>
+<span class="nc" id="L179">            Vector3 translatedPoint = gameRenderer.translateCoords(Gdx.input.getX(), Gdx.input.getY());</span>
+<span class="nc" id="L180">            Building buildingToRemove = GameGlobals.BUILDINGS_MAP.getBuildingAtPoint(translatedPoint.x, </span>
+                translatedPoint.y);
+
+            //If building exists brings up pop-up
+<span class="nc bnc" id="L184" title="All 2 branches missed.">            if(buildingToRemove != null) {</span>
+<span class="nc" id="L185">                removeBuildingPopUp.setPosition((UIStage.getWidth() - removeBuildingPopUp.getWidth()) / 2, </span>
+<span class="nc" id="L186">                    (UIStage.getHeight() - removeBuildingPopUp.getHeight()) / 2);</span>
+<span class="nc" id="L187">                removeBuildingPopUp.setupPopUp(GameGlobals.BUILDINGS_MAP, buildingToRemove);</span>
+<span class="nc" id="L188">                UIStage.addActor(removeBuildingPopUp);</span>
+            }
+        }
+
+        // Stops fire if the building is on fire
+<span class="nc bnc" id="L193" title="All 4 branches missed.">        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) &amp;&amp; selectedTexture == null){</span>
+<span class="nc" id="L194">            Vector3 translatedPoint = gameRenderer.translateCoords(Gdx.input.getX(), Gdx.input.getY());</span>
+<span class="nc" id="L195">            Building currentBuilding = GameGlobals.BUILDINGS_MAP.getBuildingAtPoint(translatedPoint.x, </span>
+                translatedPoint.y);
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            if(currentBuilding != null) {</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                if(currentBuilding.getOnFire()){    </span>
+<span class="nc" id="L199">                    SaviourAchievement saviourAchievement = (SaviourAchievement) (</span>
+<span class="nc" id="L200">                        GameGlobals.ACHIEVEMENTS.getAchievement(SaviourAchievement.NAME));</span>
+<span class="nc" id="L201">                    saviourAchievement.burningBuildingSaved();</span>
+                }
+<span class="nc" id="L203">                currentBuilding.setOnFire(false);</span>
+            }
+        }
+
+        // Check for left mouse click to place the texture
+<span class="nc bnc" id="L208" title="All 4 branches missed.">        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) &amp;&amp; selectedTexture != null) {</span>
+
+<span class="nc" id="L210">            if (!GameGlobals.BUILDINGS_MAP.attemptAddBuilding(currentBuildingInfo, selectedTexture, </span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                    previewX, previewY).isEmpty()) {</span>
+                // Plays the sound of a building being places
+<span class="nc" id="L213">                GameSounds.playPlacedBuilding();</span>
+
+                // The building is no longer being placed
+<span class="nc" id="L216">                isPreviewing = false;</span>
+<span class="nc" id="L217">                currentBuildingInfo = null;</span>
+<span class="nc" id="L218">                selectedTexture = null;</span>
+            }
+            else {
+                //Creates a task to remove the event from the screen after 3s.
+<span class="nc" id="L222">                Timer timer = new Timer(3000, new ActionListener(){</span>
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+<span class="nc" id="L225">                        collisionPopUp.remove();</span>
+<span class="nc" id="L226">                    }</span>
+                }); 
+<span class="nc" id="L228">                timer.setRepeats(false);</span>
+
+<span class="nc" id="L230">                UIStage.addActor(collisionPopUp);</span>
+<span class="nc" id="L231">                timer.start();</span>
+
+<span class="nc" id="L233">                GameSounds.playPlaceError();</span>
+            }
+
+            //Stops menu from opening when placing buildings below buttons
+<span class="nc" id="L237">            Vector3 translatedPoint = gameRenderer.translateCoords(Gdx.input.getX(), Gdx.input.getY());</span>
+<span class="nc bnc" id="L238" title="All 6 branches missed.">            if (translatedPoint.x &gt;= 616 &amp;&amp; translatedPoint.x &lt; 1176 &amp;&amp; translatedPoint.y &lt; 136){</span>
+<span class="nc" id="L239">                openMenu = false;</span>
+            }
+        }
+
+<span class="nc" id="L243">    }</span>
+
+    /**
+     * Selects a building by building ID
+     * @param buildingType buildingType of the building that the user wants to place down
+     * @param index int the index of where it is in the dictionary
+     */
+    public void selectBuilding(BuildingStats.BuildingType buildingType, int index){
+
+<span class="nc" id="L252">        isPreviewing = true;</span>
+<span class="nc" id="L253">        BuildingInfo newBuilding = BuildingStats.getInfo(buildingType,index);</span>
+<span class="nc" id="L254">        selectedTexture = BuildingStats.getTextureOfBuilding(BuildingStats.buildingDict.get(</span>
+                buildingType)[index]);
+<span class="nc" id="L256">        currentBuildingInfo = newBuilding;</span>
+<span class="nc" id="L257">    }</span>
+
+    /**
+     * Snaps the coordinates passed in to the grid.
+     * @param x X
+     * @param y Y
+     * @return Point new coordinates that occur on an intersection of the tiles in the background.
+     */
+    private Vector3 snapBuildingToGrid(float x, float y){
+
+<span class="nc" id="L267">        int gridSize = 32;</span>
+<span class="nc" id="L268">        Vector3 translatedPoint = gameRenderer.translateCoords(x, y);</span>
+
+<span class="nc" id="L270">        float newX = Math.round(translatedPoint.x / gridSize) * gridSize;</span>
+<span class="nc" id="L271">        float newY = Math.round(translatedPoint.y / gridSize) * gridSize;</span>
+
+<span class="nc" id="L273">        return new Vector3(newX, newY, 0);</span>
+    }
+
+    public boolean getOpenMenu() {
+<span class="nc" id="L277">        return openMenu;</span>
+    }
+
+    public void setOpenMenu(boolean openMenu) {
+<span class="nc" id="L281">        this.openMenu = openMenu;</span>
+<span class="nc" id="L282">    }</span>
+
+    /**
+     * Disposes building being drawn for garbage collection.
+     */
+    public void dispose(){
+<span class="nc" id="L288">        batch.dispose();</span>
+<span class="nc" id="L289">    }</span>
+
+    public void setUIStage(Stage stage) {
+<span class="nc" id="L292">        this.UIStage = stage;</span>
+<span class="nc" id="L293">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

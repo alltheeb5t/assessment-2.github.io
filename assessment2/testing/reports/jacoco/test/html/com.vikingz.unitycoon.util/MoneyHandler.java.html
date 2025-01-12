@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MoneyHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.util</a> &gt; <span class="el_source">MoneyHandler.java</span></div><h1>MoneyHandler.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.util;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.vikingz.unitycoon.building.Building;
+import com.vikingz.unitycoon.building.BuildingStats.BuildingType;
+import com.vikingz.unitycoon.building.EarnSchedule;
+
+/**
+ * This new class contains all the balance functions.
+ * It was implemented to complete UR_FINANCE and FR_STUDENT_FINANCE.
+ */
+public class MoneyHandler {
+    
+    int balance;
+
+    // Used to keep track of type-wide changes to the amount of money a building yields
+<span class="fc" id="L21">    Map&lt;BuildingType, Float&gt; earningMultipliersByType = new HashMap&lt;BuildingType,Float&gt;();</span>
+
+    // Support limiting the amount of debt that player is allowed to accumulate
+    public static final int MAX_DEBT = Integer.MAX_VALUE;
+
+    // Future support for variable starting balance
+    public static final int STARTING_BALANCE = 1000;
+
+    /**
+     * Constructor called at the start of the game and on reset
+     */
+<span class="fc" id="L32">    public MoneyHandler() {</span>
+<span class="fc" id="L33">        balance = STARTING_BALANCE;</span>
+
+        // Set all multipliers initially to 1
+<span class="fc" id="L36">        EnumSet.allOf(BuildingType.class).forEach(buildingType -&gt; {</span>
+<span class="fc" id="L37">            earningMultipliersByType.put(buildingType, 1f);</span>
+<span class="fc" id="L38">        });</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Remove the specified amount from the current balance
+     * @param amount
+     * @return boolean: Was withdrawal successful?
+     */
+    public boolean withdraw(float amount) {
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (balance - amount &gt; -MAX_DEBT) {</span>
+<span class="fc" id="L48">            balance -= amount;</span>
+<span class="fc" id="L49">            return true;</span>
+        }
+
+<span class="nc" id="L52">        return false;</span>
+    }
+
+    /**
+     * Add the specified amount to the current balance (as a one-off)
+     * @param amount
+     * @return boolean: Was the deposit successful?
+     */
+    public boolean deposit(float amount) {
+<span class="fc" id="L61">        balance += amount;</span>
+
+<span class="fc" id="L63">        return true;</span>
+    }
+
+
+    /**
+     * Called periodically by the timer. Calculates and adds revenue from buildings that provide 
+     * a continuous revenue stream (e.g. food outlets).
+     * Earns only half the normal amount of money if in debt.
+     */
+    public void earn(List&lt;Building&gt; buildings, EarnSchedule earnSchedule) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (Building building : buildings){</span>
+<span class="fc" id="L74">            float multiplier = earningMultipliersByType.get(building.getBuildingType());</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            if (balance &lt; 0) { // Earnings half when in debt</span>
+<span class="fc" id="L77">                multiplier *= 0.5;</span>
+            }
+            
+<span class="fc" id="L80">            balance += multiplier * building.calculateProfitMade(earnSchedule);</span>
+<span class="fc" id="L81">        }</span>
+<span class="fc" id="L82">    }</span>
+
+    /**
+     * Get the current total cash balance of the user. May be negative if in debt.
+     * @return
+     */
+    public float getBalance() {
+<span class="fc" id="L89">        return balance;</span>
+    }
+
+    /**
+     * Applies a new multiplier to specific building type (compounded on existing multiplier)
+     * @param buildingType Type of building to apply multiplier to
+     * @param multiplier Float value to multiply by
+     * @return New total multiplier (not including how earnings half when in debt)
+     */
+    public float applyMultiplierToType(BuildingType buildingType, float multiplier) {
+<span class="fc" id="L99">        float newMultiplier = earningMultipliersByType.get(buildingType) * multiplier;</span>
+<span class="fc" id="L100">        earningMultipliersByType.put(buildingType, newMultiplier);</span>
+
+<span class="fc" id="L102">        return newMultiplier;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

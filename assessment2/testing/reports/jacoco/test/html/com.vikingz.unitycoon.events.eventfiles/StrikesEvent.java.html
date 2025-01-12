@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StrikesEvent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.events.eventfiles</a> &gt; <span class="el_source">StrikesEvent.java</span></div><h1>StrikesEvent.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.events.eventfiles;
+
+import com.vikingz.unitycoon.building.BuildingStats.BuildingType;
+import com.vikingz.unitycoon.global.GameGlobals;
+
+import java.util.Random;
+
+/**
+ * This is a new class which creates a strikes event object.
+ * It was implemented to complete UR_EVENTS.
+ */
+public class StrikesEvent extends Event{
+
+    /**
+     * A negative event where the staff strike, freezing buildings from building.
+     * The player can either pay the staff to end the strikes at the cost of increased building costs, and a slight satisfaction hit,
+     * or they may attempt to wait the strikes out, either recalling this event or resolving the strikes.
+     */
+<span class="fc" id="L19">    public StrikesEvent() {</span>
+
+<span class="fc" id="L21">        GameGlobals.buildingAllowed = false;</span>
+
+<span class="fc" id="L23">        setMessage(&quot;Your staff have gone on strike over pay disputes!\n\nYou can either increase their&quot;</span>
+            + &quot; pay and stop the strikes\nor hope it goes away on its own.\n\nWhile strikes are ongoing,&quot;
+            + &quot; you cannot\nbuild any more buildings and your\nsatisfaction will fall.&quot;);
+
+<span class="fc" id="L27">        setLeftText(&quot;Ignore&quot;);</span>
+
+<span class="fc" id="L29">        setLeftRun(() -&gt; {</span>
+<span class="fc" id="L30">            Random random = new Random();</span>
+<span class="fc" id="L31">            GameGlobals.SATISFACTION.applyPenalty(5);</span>
+<span class="fc" id="L32">            int eventTime = GameGlobals.TIME_REMAINING - 10;</span>
+            // Prevents events happening at the same time
+<span class="fc bfc" id="L34" title="All 2 branches covered.">            for (int time : GameGlobals.EVENT.getEventTimes()) {</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">                if (time == eventTime) {</span>
+<span class="nc" id="L36">                    eventTime++;</span>
+                }
+            }
+<span class="fc" id="L39">            Runnable eventRun = () -&gt; {</span>
+<span class="nc" id="L40">                int chance = random.nextInt(3);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">                switch(chance) {</span>
+                    case 0:
+<span class="nc" id="L43">                        gameScreen.event(&quot;StrikesResolvedEvent&quot;);</span>
+<span class="nc" id="L44">                        break;</span>
+                    default:
+<span class="nc" id="L46">                        gameScreen.event(&quot;StrikesEvent&quot;);</span>
+                }
+<span class="nc" id="L48">            };</span>
+<span class="fc" id="L49">            GameGlobals.EVENT.extendEventQueue(eventTime, eventRun);</span>
+<span class="fc" id="L50">        });</span>
+
+<span class="fc" id="L52">        setRightText(&quot;Pay More&quot;);</span>
+
+<span class="fc" id="L54">        setRightRun(() -&gt; {</span>
+<span class="fc" id="L55">            GameGlobals.SATISFACTION.applyPenalty(5);</span>
+<span class="fc" id="L56">            GameGlobals.MONEY.applyMultiplierToType(BuildingType.ACADEMIC, 1.5F);</span>
+<span class="fc" id="L57">            GameGlobals.MONEY.applyMultiplierToType(BuildingType.RECREATIONAL, 0.75F);</span>
+<span class="fc" id="L58">            GameGlobals.buildingAllowed = true;</span>
+<span class="fc" id="L59">        });</span>
+
+<span class="fc" id="L61">        GameGlobals.EVENT.incrementNegativeEvent();</span>
+
+<span class="fc" id="L63">        setNoChoice(false);</span>
+<span class="fc" id="L64">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

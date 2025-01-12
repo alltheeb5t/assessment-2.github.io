@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameMusic.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.util</a> &gt; <span class="el_source">GameMusic.java</span></div><h1>GameMusic.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.util;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.vikingz.unitycoon.global.GameConfig;
+
+
+/**
+ * This class plays the game music throughout the game.
+ * 
+ * This class has been refactored slightly to make the code more readable, however it is largely unchanged.
+ */
+<span class="fc" id="L13">public class GameMusic {</span>
+
+    //Object that holds backgroundMusic to be played
+    static Music backgroundMusic;
+
+    //Sets the volume of the background music
+<span class="fc" id="L19">    public static float volume = GameConfig.getInstance().MusicVolumeValue;</span>
+
+    /**
+     * Initialises the Game music class by loading in the sound files and settings initial settings.
+     */
+    public void init() {
+<span class="fc" id="L25">        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal(&quot;audio/Background_Music.ogg&quot;));</span>
+<span class="fc" id="L26">        backgroundMusic.setLooping(true);</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Plays the game music
+     */
+    public static void play(){
+<span class="fc" id="L33">        backgroundMusic.setVolume(volume);</span>
+<span class="fc" id="L34">        backgroundMusic.play();</span>
+<span class="fc" id="L35">    }</span>
+
+    /**
+     * Gets the volume of the music
+     * @return Float Volume level
+     */
+    public static float getVolume() {
+<span class="nc" id="L42">        return volume;</span>
+    }
+
+    /**
+     * Sets the volume of the music
+     * @param volume New volume level
+     */
+    public static void setVolume(float volume) {
+<span class="nc" id="L50">        GameConfig.getInstance().MusicVolumeValue = volume;</span>
+<span class="nc" id="L51">        GameMusic.volume = GameConfig.getInstance().MusicVolumeValue;</span>
+<span class="nc" id="L52">        play();</span>
+<span class="nc" id="L53">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DebtMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.menus</a> &gt; <span class="el_source">DebtMenu.java</span></div><h1>DebtMenu.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.menus;
+
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.vikingz.unitycoon.building.BuildingStats.BuildingType;
+import com.vikingz.unitycoon.global.GameGlobals;
+import com.vikingz.unitycoon.render.BuildingRenderer;
+
+/**
+ * This class creates a Menu that pops up when the user tries to go into debt the first time.
+ * This new class was created to help with UI and meet NFR_EASE_OF_USE.
+ */
+public class DebtMenu extends Window {
+    
+<span class="nc" id="L20">    String message = &quot;Are you sure you want to go into debt?&quot;;</span>
+    Label messageLabel;
+
+    public DebtMenu (Skin skin) {
+        
+<span class="nc" id="L25">        super(&quot;&quot;, skin);</span>
+
+<span class="nc" id="L27">        this.setSize(800, 300);</span>
+<span class="nc" id="L28">        this.setModal(true);</span>
+<span class="nc" id="L29">        this.setMovable(false);</span>
+<span class="nc" id="L30">        this.setResizable(false);</span>
+
+<span class="nc" id="L32">        this.setBackground(GameGlobals.backGroundDrawable);</span>
+
+<span class="nc" id="L34">        messageLabel = new Label(message, skin);</span>
+<span class="nc" id="L35">        messageLabel.setFontScale(2);</span>
+<span class="nc" id="L36">        this.add(messageLabel).row();</span>
+<span class="nc" id="L37">    }</span>
+
+    /**
+     * Configures the button that appears on the popup.
+     */
+    public void setupButton(Skin skin, BuildingRenderer buildingRenderer, Window window, 
+        BuildingType buildingType, int index){
+
+<span class="nc" id="L45">        Table table = new Table();</span>
+
+<span class="nc" id="L47">        TextButton leftBtn = new TextButton(&quot;No&quot;, skin);</span>
+<span class="nc" id="L48">        table.add(leftBtn).pad(5);</span>
+
+<span class="nc" id="L50">        leftBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L53">                DebtMenu.this.remove();</span>
+<span class="nc" id="L54">            }</span>
+        });
+
+<span class="nc" id="L57">        TextButton rightBtn = new TextButton(&quot;Yes&quot;, skin);</span>
+<span class="nc" id="L58">        table.add(rightBtn).pad(5);</span>
+
+<span class="nc" id="L60">        rightBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L63">                buildingRenderer.selectBuilding(buildingType,index);</span>
+<span class="nc" id="L64">                window.remove();</span>
+<span class="nc" id="L65">                DebtMenu.this.remove();</span>
+<span class="nc" id="L66">            }</span>
+        });
+
+<span class="nc" id="L69">        this.add(table);</span>
+<span class="nc" id="L70">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

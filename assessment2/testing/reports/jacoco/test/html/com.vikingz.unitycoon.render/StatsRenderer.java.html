@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StatsRenderer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.render</a> &gt; <span class="el_source">StatsRenderer.java</span></div><h1>StatsRenderer.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.render;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.vikingz.unitycoon.global.GameGlobals;
+import com.vikingz.unitycoon.util.TimeHandler;
+
+/**
+ * This class is used for drawing game stats to the screen.
+ *
+ * This class contains all the labels that are on the
+ * top right of the screen that display the users balance,
+ * satisfaction etc.
+ * 
+ * This class has been refactored to change the UI for the stats display
+ */
+public class StatsRenderer {
+
+    //Used to render UI
+    final SpriteBatch batch;
+    final BitmapFont font;
+    final Stage stage;
+
+    //Used to resize UI renderer to new screen size
+    float width;
+    float height;
+
+    Table statsBarTbl;
+
+    // Labels and images
+    String balStr;
+    Label balance;
+    Image balImg;
+
+    String studentsStr;
+    Label students;
+    Image studentsImg;
+
+    String satisStr;
+    Label satisfaction;
+    Image satisImg;
+
+    String accomBuildingsStr;
+    Label accomBuildings;
+    Image accomImg;
+
+    String academBuildingsStr;
+    Label academBuildings;
+    Image academImg;
+
+    String recBuildingsStr;
+    Label recBuildings;
+    Image recImg;
+
+    String foodBuildingsStr;
+    Label foodBuildings;
+    Image foodImg;
+
+    String timerStr;
+    Label timer;
+    Image timerImg;
+
+    String inGameTimerStr;
+    Label inGameTimer;
+
+    //Stores all labels
+    List&lt;Label&gt; labels;
+
+    /**
+     * Creates a new stats renderer
+     * @param skin Skin that determines the style of the text
+     */
+<span class="nc" id="L85">    public StatsRenderer(Skin skin) {</span>
+
+<span class="nc" id="L87">        batch = new SpriteBatch();</span>
+<span class="nc" id="L88">        stage = new Stage();</span>
+<span class="nc" id="L89">        font = new BitmapFont();</span>
+<span class="nc" id="L90">        font.getData().setScale(1.5f);</span>
+<span class="nc" id="L91">        labels = new ArrayList&lt;&gt;();</span>
+
+        // Label strings
+<span class="nc" id="L94">        balStr = &quot;&quot;;</span>
+<span class="nc" id="L95">        studentsStr = &quot;&quot;;</span>
+<span class="nc" id="L96">        satisStr = &quot;&quot;;</span>
+<span class="nc" id="L97">        accomBuildingsStr = &quot;&quot;;</span>
+<span class="nc" id="L98">        academBuildingsStr = &quot;&quot;;</span>
+<span class="nc" id="L99">        recBuildingsStr = &quot;&quot;;</span>
+<span class="nc" id="L100">        foodBuildingsStr = &quot;&quot;;</span>
+<span class="nc" id="L101">        timerStr = &quot;&quot;;</span>
+<span class="nc" id="L102">        inGameTimerStr = &quot;&quot;;</span>
+
+        // Creating labels
+<span class="nc" id="L105">        balance = new Label(balStr, skin);</span>
+<span class="nc" id="L106">        students = new Label(studentsStr, skin);</span>
+<span class="nc" id="L107">        satisfaction = new Label(satisStr, skin);</span>
+<span class="nc" id="L108">        accomBuildings = new Label(accomBuildingsStr, skin);</span>
+<span class="nc" id="L109">        academBuildings = new Label(academBuildingsStr, skin);</span>
+<span class="nc" id="L110">        recBuildings = new Label(recBuildingsStr, skin);</span>
+<span class="nc" id="L111">        foodBuildings = new Label(foodBuildingsStr, skin);</span>
+<span class="nc" id="L112">        timer = new Label(timerStr, skin);</span>
+<span class="nc" id="L113">        inGameTimer = new Label(inGameTimerStr, skin);</span>
+
+        // Adding labels to a list
+<span class="nc" id="L116">        labels.add(balance);</span>
+<span class="nc" id="L117">        labels.add(students);</span>
+<span class="nc" id="L118">        labels.add(satisfaction);</span>
+<span class="nc" id="L119">        labels.add(accomBuildings);</span>
+<span class="nc" id="L120">        labels.add(academBuildings);</span>
+<span class="nc" id="L121">        labels.add(recBuildings);</span>
+<span class="nc" id="L122">        labels.add(foodBuildings);</span>
+<span class="nc" id="L123">        labels.add(timer);</span>
+<span class="nc" id="L124">        labels.add(inGameTimer);</span>
+
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        for(Label lbl: labels){</span>
+<span class="nc" id="L127">            lbl.setColor(Color.WHITE);</span>
+<span class="nc" id="L128">            lbl.setFontScale(1.5f);</span>
+<span class="nc" id="L129">        }</span>
+
+        //Texture atlas of building menu bar
+<span class="nc" id="L132">        Texture textureAtlas = new Texture(Gdx.files.internal(&quot;textureAtlases/buildMenuButtonsAtlas.png&quot;));</span>
+
+        //Sets the pixel size of tiles used for build menu bar
+<span class="nc" id="L135">        int atlasTileSize = 64;</span>
+        //Sets all the images
+<span class="nc" id="L137">        academImg = new Image(new TextureRegion(textureAtlas, (int) (atlasTileSize * 0.5), atlasTileSize, </span>
+            atlasTileSize, atlasTileSize));
+<span class="nc" id="L139">        accomImg = new Image(new TextureRegion(textureAtlas, (int) (atlasTileSize * 2.5), atlasTileSize, </span>
+            atlasTileSize, atlasTileSize));
+<span class="nc" id="L141">        recImg = new Image(new TextureRegion(textureAtlas, (int) (atlasTileSize * 4.5), atlasTileSize, </span>
+            atlasTileSize, atlasTileSize));
+<span class="nc" id="L143">        foodImg = new Image(new TextureRegion(textureAtlas, (int) (atlasTileSize * 6.5), atlasTileSize, </span>
+            atlasTileSize, atlasTileSize));
+<span class="nc" id="L145">        balImg = new Image(new Texture(&quot;png\\moneySymbol.png&quot;));</span>
+<span class="nc" id="L146">        satisImg = new Image(new Texture(&quot;png\\satisfactionSymbol.png&quot;));</span>
+<span class="nc" id="L147">        timerImg = new Image(new Texture(&quot;png\\timeSymbol.png&quot;));</span>
+<span class="nc" id="L148">        studentsImg = new Image(new Texture(&quot;png\\studentNumSymbol.png&quot;));</span>
+
+<span class="nc" id="L150">        addStatsBar();</span>
+<span class="nc" id="L151">    }</span>
+
+
+    private void addStatsBar() {
+
+<span class="nc" id="L156">        int padding = 5;</span>
+<span class="nc" id="L157">        int groupSpacing = 30;</span>
+
+        // Create layout table
+<span class="nc" id="L160">        statsBarTbl = new Table();</span>
+<span class="nc" id="L161">        statsBarTbl.setFillParent(true);</span>
+
+<span class="nc" id="L163">        statsBarTbl.top();</span>
+<span class="nc" id="L164">        statsBarTbl.left();</span>
+
+        // Adds the labels and images to the stats bar(table)
+        // Groups together game stats
+<span class="nc" id="L168">        Table gameStatsTbl = new Table();</span>
+        // Groups each stat to it's image
+<span class="nc" id="L170">        Table studentsTbl = new Table();</span>
+<span class="nc" id="L171">        studentsTbl.add(studentsImg).pad(padding).size(30);</span>
+<span class="nc" id="L172">        studentsTbl.add(students).pad(padding);</span>
+<span class="nc" id="L173">        gameStatsTbl.add(studentsTbl).spaceRight(groupSpacing).expandX().uniformX();</span>
+<span class="nc" id="L174">        Table satisTbl = new Table();</span>
+<span class="nc" id="L175">        satisTbl.add(satisImg).pad(padding).size(30);</span>
+<span class="nc" id="L176">        satisTbl.add(satisfaction).pad(padding);</span>
+<span class="nc" id="L177">        gameStatsTbl.add(satisTbl).spaceRight(groupSpacing).expandX().uniformX();</span>
+<span class="nc" id="L178">        Table balanceTbl = new Table();</span>
+<span class="nc" id="L179">        balanceTbl.add(balImg).pad(padding).size(30);</span>
+<span class="nc" id="L180">        balanceTbl.add(balance).pad(padding);</span>
+<span class="nc" id="L181">        gameStatsTbl.add(balanceTbl).expandX().uniformX();</span>
+<span class="nc" id="L182">        statsBarTbl.add(gameStatsTbl).uniformX().expandX().left();</span>
+
+        // Groups together bulding stats
+<span class="nc" id="L185">        Table buildingTbl = new Table();</span>
+<span class="nc" id="L186">        Table accomTbl = new Table();</span>
+<span class="nc" id="L187">        accomTbl.add(accomImg).pad(padding).size(30);</span>
+<span class="nc" id="L188">        accomTbl.add(accomBuildings).pad(padding);</span>
+<span class="nc" id="L189">        buildingTbl.add(accomTbl).spaceRight(groupSpacing).expandX().uniformX();</span>
+<span class="nc" id="L190">        Table academTbl = new Table();</span>
+<span class="nc" id="L191">        academTbl.add(academImg).pad(padding).size(30);</span>
+<span class="nc" id="L192">        academTbl.add(academBuildings).pad(padding);</span>
+<span class="nc" id="L193">        buildingTbl.add(academTbl).spaceRight(groupSpacing).expandX().uniformX();</span>
+<span class="nc" id="L194">        Table recTbl = new Table();</span>
+<span class="nc" id="L195">        recTbl.add(recImg).pad(padding).size(30);</span>
+<span class="nc" id="L196">        recTbl.add(recBuildings).pad(padding);</span>
+<span class="nc" id="L197">        buildingTbl.add(recTbl).spaceRight(groupSpacing).expandX().uniformX();</span>
+<span class="nc" id="L198">        Table foodTbl = new Table();</span>
+<span class="nc" id="L199">        foodTbl.add(foodImg).pad(padding).size(30);</span>
+<span class="nc" id="L200">        foodTbl.add(foodBuildings).pad(padding);</span>
+<span class="nc" id="L201">        buildingTbl.add(foodTbl).expandX().uniformX();</span>
+<span class="nc" id="L202">        statsBarTbl.add(buildingTbl).uniformX().expandX();</span>
+
+        // Groups together timer stats
+<span class="nc" id="L205">        Table timerTbl = new Table();</span>
+<span class="nc" id="L206">        Table timeCountdownTbl = new Table();</span>
+<span class="nc" id="L207">        timeCountdownTbl.add(timerImg).pad(padding).size(30);</span>
+<span class="nc" id="L208">        timeCountdownTbl.add(timer).pad(padding);</span>
+<span class="nc" id="L209">        timerTbl.add(timeCountdownTbl).expandX().uniformX();</span>
+<span class="nc" id="L210">        timerTbl.add(inGameTimer).pad(padding).expandX().uniformX();</span>
+<span class="nc" id="L211">        statsBarTbl.add(timerTbl).expandX().uniformX().right();</span>
+<span class="nc" id="L212">        statsBarTbl.padRight(50); //Adds gap at the end for pause button</span>
+
+<span class="nc" id="L214">        stage.addActor(statsBarTbl);</span>
+<span class="nc" id="L215">    }</span>
+
+    /**
+     * Draws the labels to the screen
+     * @param delta Time since last frame
+     */
+    public void render(float delta) {
+
+<span class="nc" id="L223">        batch.begin();</span>
+
+        // Update the label contents each frame
+        //Sets the balance colour to red if in debt
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        if (GameGlobals.MONEY.getBalance() &lt; 0) {balance.setColor(Color.RED);} </span>
+<span class="nc" id="L228">        else {balance.setColor(Color.WHITE);}</span>
+<span class="nc" id="L229">        balStr = &quot;&quot; + (int)(GameGlobals.MONEY.getBalance()) + &quot;k&quot;;</span>
+<span class="nc" id="L230">        studentsStr = &quot;&quot; + GameGlobals.STUDENTS;</span>
+<span class="nc" id="L231">        satisStr = &quot;&quot; + GameGlobals.SATISFACTION.getSatisfaction() + &quot;%&quot;;</span>
+<span class="nc" id="L232">        accomBuildingsStr = &quot;&quot; + GameGlobals.ACCOMODATION_BUILDINGS_COUNT;</span>
+<span class="nc" id="L233">        academBuildingsStr = &quot;&quot; + GameGlobals.ACADEMIC_BUILDINGS_COUNT;</span>
+<span class="nc" id="L234">        recBuildingsStr = &quot;&quot; + GameGlobals.RECREATIONAL_BUILDINGS_COUNT;</span>
+<span class="nc" id="L235">        foodBuildingsStr = &quot;&quot; + GameGlobals.FOOD_BUILDINGS_COUNT;</span>
+
+<span class="nc" id="L237">        TimeHandler.Time timerAmount = TimeHandler.secondsToMinSecs(GameGlobals.TIME_REMAINING);</span>
+<span class="nc" id="L238">        timerStr = &quot;Timer: &quot; + timerAmount;</span>
+
+<span class="nc" id="L240">        inGameTimerStr = TimeHandler.inGameTime(GameGlobals.TIME_REMAINING);</span>
+
+        // Sets the new string to the corresponding label
+<span class="nc" id="L243">        balance.setText(balStr);</span>
+<span class="nc" id="L244">        students.setText(studentsStr);</span>
+<span class="nc" id="L245">        satisfaction.setText(satisStr);</span>
+<span class="nc" id="L246">        accomBuildings.setText(accomBuildingsStr);</span>
+<span class="nc" id="L247">        academBuildings.setText(academBuildingsStr);</span>
+<span class="nc" id="L248">        recBuildings.setText(recBuildingsStr);</span>
+<span class="nc" id="L249">        foodBuildings.setText(foodBuildingsStr);</span>
+<span class="nc" id="L250">        timer.setText(timerStr);</span>
+<span class="nc" id="L251">        inGameTimer.setText(inGameTimerStr);</span>
+
+<span class="nc" id="L253">        stage.act(delta);</span>
+<span class="nc" id="L254">        stage.draw();</span>
+<span class="nc" id="L255">        batch.end();</span>
+<span class="nc" id="L256">    }</span>
+
+    /**
+     * Sets current width and height to the new values when the window is resized
+     * @param width New width
+     * @param height New height
+     */
+    public void resize(float width, float height){
+<span class="nc" id="L264">        this.width = width;</span>
+<span class="nc" id="L265">        this.height = height;</span>
+<span class="nc" id="L266">    }</span>
+
+    /**
+     * disposes stats being drawn for garbage collection
+     */
+    public void dispose(){
+<span class="nc" id="L272">        stage.dispose();</span>
+<span class="nc" id="L273">        batch.dispose();</span>
+<span class="nc" id="L274">        font.dispose();</span>
+<span class="nc" id="L275">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MenuScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.screens</a> &gt; <span class="el_source">MenuScreen.java</span></div><h1>MenuScreen.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.screens;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.vikingz.unitycoon.menus.AchievementsMenu;
+import com.vikingz.unitycoon.menus.TutorialMenu;
+import com.vikingz.unitycoon.menus.UsernameMenu;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
+/**
+ * This class represents the main menu of the game.
+ *
+ * The main menu is where the user begins from. This menu contains multiple buttons that allow the user 
+ * to begin the game.
+ *
+ * Inherits Screen, SuperScreen
+ * 
+ * This class has been refactored slightly to make the code more readable and improve UI.
+ */
+public class MenuScreen extends SuperScreen implements Screen {
+
+    /**
+     * Creates a new menu screen
+     */
+<span class="nc" id="L31">    public MenuScreen() {</span>
+<span class="nc" id="L32">        Gdx.input.setInputProcessor(stage);</span>
+
+        // Create buttons
+<span class="nc" id="L35">        TextButton playButton = new TextButton(&quot;Play&quot;, skin);</span>
+<span class="nc" id="L36">        TextButton howToPlayButton = new TextButton(&quot;How To Play&quot;, skin);</span>
+<span class="nc" id="L37">        TextButton achievementsButton = new TextButton(&quot;Achievements&quot;,skin);</span>
+<span class="nc" id="L38">        TextButton settingsButton = new TextButton(&quot;Settings&quot;, skin);</span>
+<span class="nc" id="L39">        TextButton quitButton = new TextButton(&quot;Quit&quot;, skin);</span>
+
+<span class="nc" id="L41">        AchievementsMenu achievementsMenu = new AchievementsMenu(skin);</span>
+        
+<span class="nc" id="L43">        TutorialMenu tutorialMenu = new TutorialMenu(skin);</span>
+<span class="nc" id="L44">        tutorialMenu.setPosition((stage.getWidth() - tutorialMenu.getWidth()) / 2, (stage.getHeight() - tutorialMenu.getHeight()) / 2);</span>
+<span class="nc" id="L45">        tutorialMenu.setupButton(skin);</span>
+
+        // Add listeners to buttons
+<span class="nc" id="L48">        playButton.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L51">                ScreenMultiplexer.switchScreens(ScreenMultiplexer.Screens.MAPSELECTION);</span>
+<span class="nc" id="L52">            };</span>
+        });
+
+<span class="nc" id="L55">        achievementsButton.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L58">                achievementsMenu.setPosition((stage.getWidth() - achievementsMenu.getWidth()) / 2, (stage.getHeight() - achievementsMenu.getHeight()) / 2);</span>
+<span class="nc" id="L59">                achievementsMenu.update();</span>
+<span class="nc" id="L60">                stage.addActor(achievementsMenu);</span>
+<span class="nc" id="L61">                };</span>
+         });
+      
+<span class="nc" id="L64">        howToPlayButton.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L67">                stage.addActor(tutorialMenu);</span>
+<span class="nc" id="L68">            };</span>
+        });
+
+<span class="nc" id="L71">        settingsButton.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L74">                ScreenMultiplexer.switchScreens(ScreenMultiplexer.Screens.SETTINGS);</span>
+<span class="nc" id="L75">            };</span>
+        });
+
+<span class="nc" id="L78">        quitButton.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L81">                Gdx.app.exit(); // Quit the application</span>
+<span class="nc" id="L82">            };</span>
+        });
+
+        // Create a table for layout
+<span class="nc" id="L86">        Table table = new Table();</span>
+<span class="nc" id="L87">        table.setFillParent(true);  // Center table on stage</span>
+<span class="nc" id="L88">        table.center();</span>
+
+<span class="nc" id="L90">        Image texture = new Image(new Texture(Gdx.files.internal(&quot;gameLogo.png&quot;)));</span>
+<span class="nc" id="L91">        table.add(texture).pad(50);</span>
+<span class="nc" id="L92">        table.row();</span>
+
+        // Add buttons to table with 2 rows of 2 buttons and quit at the bottom
+<span class="nc" id="L95">        Table buttonRows = new Table();</span>
+<span class="nc" id="L96">        buttonRows.add(playButton).width(425).pad(10);</span>
+<span class="nc" id="L97">        buttonRows.add(howToPlayButton).width(425).pad(10);</span>
+<span class="nc" id="L98">        buttonRows.row();</span>
+<span class="nc" id="L99">        buttonRows.add(achievementsButton).width(425).pad(10);</span>
+<span class="nc" id="L100">        buttonRows.add(settingsButton).width(425).pad(10);</span>
+        
+<span class="nc" id="L102">        table.add(buttonRows).pad(10).row();</span>
+<span class="nc" id="L103">        table.add(quitButton).width(425).pad(10);</span>
+
+        // Add the table to the stage
+<span class="nc" id="L106">        stage.addActor(table);</span>
+
+        // Opens a username screen if it hasn't already been entered
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (UsernameMenu.getUsername() == &quot;&quot;) {</span>
+<span class="nc" id="L110">            UsernameMenu usernamePopUp = new UsernameMenu(skin);</span>
+<span class="nc" id="L111">            usernamePopUp.setPosition((stage.getWidth() - usernamePopUp.getWidth()) / 2, (stage.getHeight() - usernamePopUp.getHeight()) / 2);</span>
+<span class="nc" id="L112">            usernamePopUp.setupButton();</span>
+<span class="nc" id="L113">            stage.addActor(usernamePopUp);</span>
+        }
+<span class="nc" id="L115">    }</span>
+
+    @Override
+<span class="nc" id="L118">    public void show() {}</span>
+
+    @Override
+    public void render(float delta) {
+        // Clear the screen
+<span class="nc" id="L123">        Gdx.gl.glClearColor(25/255f, 25/255f, 25/255f, 1);</span>
+<span class="nc" id="L124">        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen</span>
+
+        // Draw the stage
+<span class="nc" id="L127">        stage.act(delta);</span>
+<span class="nc" id="L128">        stage.draw();</span>
+<span class="nc" id="L129">    }</span>
+
+    @Override
+    public void resize(int width, int height) {
+        // Update the stage's viewport when the screen size changes
+<span class="nc" id="L134">        stage.getViewport().update(width, height, true);</span>
+<span class="nc" id="L135">    }</span>
+
+    @Override
+<span class="nc" id="L138">    public void pause() { }</span>
+
+    @Override
+<span class="nc" id="L141">    public void resume() { }</span>
+
+    @Override
+<span class="nc" id="L144">    public void hide() {}</span>
+
+    /**
+     * Disposes MenuScreen for garbage collection.
+     */
+    @Override
+    public void dispose() {
+        // Dispose of assets when this screen is no longer used
+<span class="nc" id="L152">        stage.dispose();</span>
+<span class="nc" id="L153">        skin.dispose();</span>
+<span class="nc" id="L154">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

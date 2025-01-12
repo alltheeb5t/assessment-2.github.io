@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.events</a> &gt; <span class="el_source">EventHandler.java</span></div><h1>EventHandler.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.events;
+
+import com.vikingz.unitycoon.events.eventfiles.*;
+import com.vikingz.unitycoon.global.GameGlobals;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+/**
+ * This new class manages the random events that occur during the game.
+ * It was implemented to complete UR_EVENTS, FR_EVENT_RESULT, FR_EVENT_DISPLAY, FR_EVENT_CHOICE.
+ */
+public class EventHandler {
+
+    public int[] getEventTimes() {
+<span class="fc" id="L17">        return eventTimes;</span>
+    }
+
+    int[] eventTimes;
+
+    public Map&lt;Integer, Runnable&gt; getEventQueue() {
+<span class="fc" id="L23">        return eventQueue;</span>
+    }
+
+    //Used to add scheduled events to run at specific times
+    Map&lt;Integer, Runnable&gt; eventQueue;
+
+    //Used to track how many positive events have run for achievements
+    int positiveEvent;
+
+    //Used to track how many negative events have run for achievements
+    int negativeEvent;
+
+    /**
+     * Manages the in game events, adds functionality for creating events
+     */
+<span class="fc" id="L38">    public EventHandler() {</span>
+<span class="fc" id="L39">        Random random = new Random();</span>
+
+<span class="fc" id="L41">        eventTimes = new int[3];</span>
+
+<span class="fc" id="L43">        eventQueue = new HashMap&lt;&gt;();</span>
+
+        //Creates 1 event per in game year.
+<span class="fc" id="L46">        eventTimes[0] = random.nextInt(201, 285);</span>
+<span class="fc" id="L47">        eventTimes[1] = random.nextInt(101, 199);</span>
+<span class="fc" id="L48">        eventTimes[2] = random.nextInt(15, 99);</span>
+<span class="fc" id="L49">    }</span>
+
+    /**
+     * Chooses a random event to run and sends it to the correct constructor
+     */
+    public EventPopup randomEvent() {
+
+        Event e;
+<span class="nc" id="L57">        Random random = new Random();</span>
+
+        //Prevents the game from crashing due to events trying to interact with none existent buildings
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (GameGlobals.BUILDINGS_MAP.getPlacedBuildings().isEmpty()) {</span>
+<span class="nc" id="L61">            int randomChoice = random.nextInt(7);</span>
+<span class="nc bnc" id="L62" title="All 7 branches missed.">            e = switch (randomChoice) {</span>
+<span class="nc" id="L63">                case 0 -&gt; new AlumniEvent();</span>
+<span class="nc" id="L64">                case 1 -&gt; new AwardEvent();</span>
+<span class="nc" id="L65">                case 2 -&gt; new BusChangeEvent();</span>
+<span class="nc" id="L66">                case 3 -&gt; new FeeIncreaseEvent();</span>
+<span class="nc" id="L67">                case 4 -&gt; new RosesEvent();</span>
+<span class="nc" id="L68">                case 5 -&gt; new SponsorEvent();</span>
+<span class="nc" id="L69">                default -&gt; new StrikesEvent();</span>
+            };
+<span class="nc" id="L71">        }</span>
+        else {
+<span class="nc" id="L73">            int randomChoice = random.nextInt(9);</span>
+<span class="nc bnc" id="L74" title="All 9 branches missed.">            e = switch (randomChoice) {</span>
+<span class="nc" id="L75">                case 0 -&gt; new AlumniEvent();</span>
+<span class="nc" id="L76">                case 1 -&gt; new AwardEvent();</span>
+<span class="nc" id="L77">                case 2 -&gt; new BusChangeEvent();</span>
+<span class="nc" id="L78">                case 3 -&gt; new FeeIncreaseEvent();</span>
+<span class="nc" id="L79">                case 4 -&gt; new FireEvent();</span>
+<span class="nc" id="L80">                case 5 -&gt; new FloodEvent();</span>
+<span class="nc" id="L81">                case 6 -&gt; new RosesEvent();</span>
+<span class="nc" id="L82">                case 7 -&gt; new SponsorEvent();</span>
+<span class="nc" id="L83">                default -&gt; new StrikesEvent();</span>
+            };
+        }
+
+        //Generates the correct format depending on if the event has two options or no choice
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (e.noChoice) {</span>
+<span class="nc" id="L89">            return new EventPopup(e.skin, e.message, e.leftRun);</span>
+        } else {
+<span class="nc" id="L91">            return new EventPopup(e.skin, e.message, e.leftRun, e.leftText, e.rightRun, e.rightText);</span>
+        }
+    }
+
+    /**
+     * Used to call specific events, mostly to created event chains
+     * @param eventName a string containing the name of the event
+     * @return EventPopup for requested event. null if requested event was invalid
+     */
+    public EventPopup setEvent(String eventName){
+
+        Event e;
+
+<span class="pc bpc" id="L104" title="3 of 5 branches missed.">        e = switch (eventName) {</span>
+<span class="fc" id="L105">            case &quot;StrikesEvent&quot; -&gt; new StrikesEvent();</span>
+<span class="nc" id="L106">            case &quot;StrikesResolvedEvent&quot; -&gt; new StrikesResolvedEvent();</span>
+<span class="nc" id="L107">            case &quot;RosesWinEvent&quot; -&gt; new RosesWinEvent();</span>
+<span class="nc" id="L108">            case &quot;RosesLoseEvent&quot; -&gt; new RosesLoseEvent();</span>
+<span class="fc" id="L109">            default -&gt; null;</span>
+        };
+
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (e == null) {</span>
+<span class="fc" id="L113">            throw new NullPointerException(&quot;The event specified does not exist.&quot;);</span>
+        }
+
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">        if (e.noChoice) {</span>
+<span class="nc" id="L117">            return new EventPopup(e.skin, e.message, e.leftRun);</span>
+        } else {
+<span class="fc" id="L119">            return new EventPopup(e.skin, e.message, e.leftRun, e.leftText, e.rightRun, e.rightText);</span>
+        }
+    }
+
+    /**
+     * Extends the queue of events to be run, given a specified time to execute the event
+     * @param time the time that the event should fire
+     * @param event the event that should be fired compiled into a runnable
+     */
+    public void extendEventQueue(int time, Runnable event) {
+<span class="fc" id="L129">        eventQueue.put(time, event);</span>
+<span class="fc" id="L130">    }</span>
+
+    /**
+     * Removes an event from the queue after it is executed at a specific time
+     * @param time the time that the event was executed
+     */
+    public void reduceEventQueue(int time) {
+<span class="fc" id="L137">        eventQueue.remove(time);</span>
+<span class="fc" id="L138">    }</span>
+
+    public void incrementPositiveEvent() {
+<span class="fc" id="L141">        positiveEvent++;</span>
+<span class="fc" id="L142">    }</span>
+
+    public void incrementNegativeEvent() {
+<span class="fc" id="L145">        negativeEvent++;</span>
+<span class="fc" id="L146">    }</span>
+
+    public int getPositiveEvent() {
+<span class="fc" id="L149">        return positiveEvent;</span>
+    }
+
+    public int getNegativeEvent() {
+<span class="fc" id="L153">        return negativeEvent;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

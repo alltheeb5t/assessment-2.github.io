@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildingInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.building</a> &gt; <span class="el_source">BuildingInfo.java</span></div><h1>BuildingInfo.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.building;
+
+import com.vikingz.unitycoon.building.BuildingStats.BuildingType;
+
+/**
+ * This class essentially serves as a struct to pass data around regarding buildings.
+ * When the user presses a button in the menu to buy a building, the data for that building.
+ * is passed around a type BuildingInfo.
+ * 
+ * This class has been refactored to help with code readability.
+ */
+public class BuildingInfo {
+
+    String  buildingID;
+    BuildingType buildingType;
+    float buildingCost;
+    int numberOfStudents;
+    float coinsPerSecond;
+
+    public BuildingInfo(String  buildingID,  BuildingStats.BuildingType buildingType, float buildingCost, 
+<span class="fc" id="L21">            int numberOfStudents, int coinsPerSecond){</span>
+<span class="fc" id="L22">        this.buildingID = buildingID;</span>
+<span class="fc" id="L23">        this.buildingType = buildingType;</span>
+<span class="fc" id="L24">        this.buildingCost = buildingCost;</span>
+<span class="fc" id="L25">        this.numberOfStudents = numberOfStudents;</span>
+<span class="fc" id="L26">        this.coinsPerSecond = coinsPerSecond;</span>
+<span class="fc" id="L27">    }</span>
+
+    public String getBuildingID() {
+<span class="nc" id="L30">        return buildingID;</span>
+    }
+
+    public void setBuildingID(String buildingID) {
+<span class="nc" id="L34">        this.buildingID = buildingID;</span>
+<span class="nc" id="L35">    }</span>
+
+    public BuildingType getBuildingType() {
+<span class="fc" id="L38">        return buildingType;</span>
+    }
+
+    public void setBuildingType(BuildingType buildingType) {
+<span class="nc" id="L42">        this.buildingType = buildingType;</span>
+<span class="nc" id="L43">    }</span>
+
+    public float getBuildingCost() {
+<span class="fc" id="L46">        return buildingCost;</span>
+    }
+
+    public int getNumberOfStudents() {
+<span class="fc" id="L50">        return numberOfStudents;</span>
+    }
+
+    public float getCoinsPerSecond() {
+<span class="fc" id="L54">        return coinsPerSecond;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

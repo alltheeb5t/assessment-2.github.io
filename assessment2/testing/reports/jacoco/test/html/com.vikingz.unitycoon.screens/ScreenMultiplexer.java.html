@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScreenMultiplexer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.screens</a> &gt; <span class="el_source">ScreenMultiplexer.java</span></div><h1>ScreenMultiplexer.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.screens;
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.vikingz.unitycoon.global.GameConfig;
+
+
+/**
+ * This class allows us to change screens anywhere within the project.
+ *
+ * On init(Game newGame) this class instantiates all the classes so that they are ready in memory and
+ * waiting to be switched to.
+ *
+ * This class also contains the enum Screens which is what is used to differentiate between the different
+ * screens available so that when the user wants to change screen all they have to do is call
+ * ScreenMultiplexer.switchScreens(Screens screen), which is much easier than having to keep track at 
+ * which point each screen is instantiated.
+ *
+ * This class also enables us to access the settings screen from any screen in the game as when the settings 
+ * screen is displayed, this class keeps track from which screen it came from so that the back button on the 
+ * settings screen will always send the user back to the screen they just came from.
+ * 
+ * This class has been refactored slightly to make the code more readable, however it is largely unchanged.
+ */
+<span class="nc" id="L25">public class ScreenMultiplexer {</span>
+
+    /**
+     * This enum contains all the screens available in the program
+     */
+<span class="nc" id="L30">    public enum Screens{</span>
+<span class="nc" id="L31">        GAME,</span>
+<span class="nc" id="L32">        MENU,</span>
+<span class="nc" id="L33">        SETTINGS,</span>
+<span class="nc" id="L34">        MAPSELECTION,</span>
+    }
+
+    // The main Game that allows us to control input
+    static Game game;
+
+    // All the screens available
+    public static GameScreen gameScreen;
+    public static MenuScreen menuScreen;
+    public static SettingsScreen settingsScreen;
+    public static MapSelectorScreen mapSelectorScreen;
+
+
+    /**
+     * Initializes the Screen Multiplexer
+     * @param newGame Game
+     */
+    public static void init(Game newGame){
+<span class="fc" id="L52">        game = newGame;</span>
+
+<span class="nc" id="L54">        menuScreen = new MenuScreen();</span>
+<span class="nc" id="L55">        settingsScreen = new SettingsScreen();</span>
+<span class="nc" id="L56">        mapSelectorScreen = new MapSelectorScreen();</span>
+<span class="nc" id="L57">    }</span>
+
+    /**
+     * Sets up everything to run a game instance, the changes to the game screen
+     * @param map Map that will be loaded in
+     */
+    public static void runGame(String map){
+<span class="nc" id="L64">        int startHeight = Gdx.graphics.getHeight();</span>
+<span class="nc" id="L65">        int startWidth = Gdx.graphics.getWidth();</span>
+<span class="nc" id="L66">        boolean fullScreen = Gdx.graphics.isFullscreen();</span>
+<span class="nc" id="L67">        boolean firstTickNeed = false;</span>
+<span class="nc bnc" id="L68" title="All 4 branches missed.">        if (Gdx.graphics.getHeight() != GameConfig.getInstance().getWindowHeight() &amp;&amp; Gdx.graphics.getHeight() != GameConfig.getInstance().getWindowHeight()) {</span>
+<span class="nc" id="L69">            Gdx.graphics.setWindowedMode(GameConfig.getInstance().getWindowWidth(), GameConfig.getInstance().getWindowHeight());</span>
+<span class="nc" id="L70">            firstTickNeed = true;</span>
+        }
+
+        //Creates new GameScreen
+<span class="nc" id="L74">        gameScreen = new GameScreen(map);</span>
+
+        //Sets previousValues
+<span class="nc" id="L77">        gameScreen.startHeight = startHeight;</span>
+<span class="nc" id="L78">        gameScreen.startWidth = startWidth;</span>
+<span class="nc" id="L79">        gameScreen.fullScreen = fullScreen;</span>
+<span class="nc" id="L80">        gameScreen.FirstTick = firstTickNeed;</span>
+
+        //Switches to gameScreen
+<span class="nc" id="L83">        gameScreen.takeInput();</span>
+<span class="nc" id="L84">        game.setScreen(gameScreen);</span>
+<span class="nc" id="L85">        settingsScreen.setGameScreen(gameScreen);</span>
+<span class="nc" id="L86">    }</span>
+
+    /**
+     * Changes the screen to the settings screen
+     * @param prevScreen The screen that the settings screen was invoked from so that when the user 
+     *                   presses the back button, they will be taken back to where they came from.
+     */
+    public static void openSettings(Screens prevScreen){
+<span class="nc" id="L94">        settingsScreen.setPrevScreen(prevScreen);</span>
+<span class="nc" id="L95">        game.setScreen(settingsScreen);</span>
+<span class="nc" id="L96">        settingsScreen.takeInput();</span>
+<span class="nc" id="L97">    }</span>
+
+    /**
+     * Stops the game and takes the user back to the main menu
+     */
+    public static void closeGame(){
+<span class="nc" id="L103">        gameScreen.dispose();</span>
+<span class="nc" id="L104">        openMenu();</span>
+<span class="nc" id="L105">    }</span>
+
+    /**
+     * Opens the main menu
+     */
+    public static void openMenu(){
+<span class="nc" id="L111">        menuScreen.dispose();</span>
+<span class="nc" id="L112">        menuScreen = new MenuScreen();</span>
+<span class="nc" id="L113">        game.setScreen(menuScreen);</span>
+<span class="nc" id="L114">    }</span>
+
+    /**
+     * Switches screens
+     * @param screen The screen you want to switch to
+     */
+    public static void switchScreens(Screens screen){
+
+<span class="nc bnc" id="L122" title="All 5 branches missed.">        switch (screen) {</span>
+            case GAME -&gt; {
+<span class="nc" id="L124">                game.setScreen(gameScreen);</span>
+<span class="nc" id="L125">                gameScreen.takeInput();</span>
+<span class="nc" id="L126">            }</span>
+            case SETTINGS -&gt; {
+<span class="nc" id="L128">                game.setScreen(settingsScreen);</span>
+<span class="nc" id="L129">                settingsScreen.takeInput();</span>
+<span class="nc" id="L130">            }</span>
+            case MENU -&gt; {
+<span class="nc" id="L132">                game.setScreen(menuScreen);</span>
+<span class="nc" id="L133">                menuScreen.takeInput();</span>
+<span class="nc" id="L134">            }</span>
+            case MAPSELECTION -&gt; {
+<span class="nc" id="L136">                game.setScreen(mapSelectorScreen);</span>
+<span class="nc" id="L137">                mapSelectorScreen.takeInput();</span>
+<span class="nc" id="L138">            }</span>
+            default -&gt; {
+            }
+        }
+<span class="nc" id="L142">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

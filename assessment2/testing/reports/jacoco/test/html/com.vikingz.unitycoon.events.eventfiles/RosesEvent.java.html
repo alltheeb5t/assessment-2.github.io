@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RosesEvent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.events.eventfiles</a> &gt; <span class="el_source">RosesEvent.java</span></div><h1>RosesEvent.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.events.eventfiles;
+
+import com.vikingz.unitycoon.building.BuildingStats.BuildingType;
+import com.vikingz.unitycoon.global.GameGlobals;
+
+import java.util.Random;
+
+/**
+ * This is a new class which creates a roses event object.
+ * It was implemented to complete UR_EVENTS.
+ */
+public class RosesEvent extends Event {
+
+    /**
+     * A positive event where the Roses competition occurs over the year, doubling income from recreational buildings.
+     * Building enough recreational buildings increases the odds of winning.
+     */
+<span class="fc" id="L18">    public RosesEvent() {</span>
+
+<span class="fc" id="L20">        setMessage(&quot;Roses is about to start!\n\nSports teams eagerly await the event, and would like &quot;</span>
+            + &quot;facilities to train in.\n\nBuilding these facilities will provide additional\nbenefits, &quot;
+            + &quot;including an increased chance to win!&quot;);
+
+<span class="fc" id="L24">        GameGlobals.EVENT.incrementPositiveEvent();</span>
+
+<span class="fc" id="L26">        setLeftRun(new Runnable() {</span>
+            @Override
+            public void run() {
+<span class="fc" id="L29">                Random random = new Random();</span>
+<span class="fc" id="L30">                GameGlobals.MONEY.applyMultiplierToType(BuildingType.RECREATIONAL, 2F);</span>
+<span class="fc" id="L31">                int eventTime = ((GameGlobals.TIME_REMAINING / 100) * 100) + 1;</span>
+                // Prevents events happening at the same time
+<span class="fc bfc" id="L33" title="All 2 branches covered.">                for (int time : GameGlobals.EVENT.getEventTimes()) {</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">                    if (time == eventTime) {</span>
+<span class="nc" id="L35">                        eventTime++;</span>
+                    }
+                }
+<span class="fc" id="L38">                Runnable eventRun = () -&gt; {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">                    if (GameGlobals.RECREATIONAL_BUILDINGS_COUNT &lt; 6) {</span>
+<span class="nc" id="L40">                        int chance = random.nextInt(3);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">                        if (chance == 0) {</span>
+<span class="nc" id="L42">                            gameScreen.event(&quot;RosesWinEvent&quot;);</span>
+                        } else {
+<span class="nc" id="L44">                            gameScreen.event(&quot;RosesLoseEvent&quot;);</span>
+                        }
+<span class="nc" id="L46">                    } else {</span>
+<span class="nc" id="L47">                        int chance = random.nextInt(2);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">                        if (chance == 0) {</span>
+<span class="nc" id="L49">                            gameScreen.event(&quot;RosesLoseEvent&quot;);</span>
+                        } else {
+<span class="nc" id="L51">                            gameScreen.event(&quot;RosesWinEvent&quot;);</span>
+                        }
+                    }
+<span class="nc" id="L54">                };</span>
+<span class="fc" id="L55">                GameGlobals.EVENT.extendEventQueue(eventTime, eventRun);</span>
+<span class="fc" id="L56">            }</span>
+        });
+<span class="fc" id="L58">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

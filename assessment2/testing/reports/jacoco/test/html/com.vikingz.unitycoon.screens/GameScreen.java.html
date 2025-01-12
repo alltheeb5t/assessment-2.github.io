@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.screens</a> &gt; <span class="el_source">GameScreen.java</span></div><h1>GameScreen.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.screens;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.vikingz.unitycoon.building.BuildingsMap;
+import com.vikingz.unitycoon.building.EarnSchedule;
+import com.vikingz.unitycoon.global.GameConfigManager;
+import com.vikingz.unitycoon.global.GameGlobals;
+import com.vikingz.unitycoon.render.GameRenderer;
+import com.vikingz.unitycoon.render.UIRenderer;
+import com.vikingz.unitycoon.util.FileHandler;
+import com.vikingz.unitycoon.util.TimeHandler;
+
+/**
+ * This is the main game class from which the game is run.
+ *
+ * This game instantiates the 2 renderers which are the GameRenderer and the UIRenderer, as well as 
+ * contains the game loop that control how the game runs.
+ *
+ * The game loop contains a section where everything in that section is updated every second which 
+ * is where all of our game stats are updated.
+ *
+ * Inherits Screen, SuperScreen
+ * 
+ * This class has been refactored to complete UR_EVENTS, UR_ACHIEVEMENTS and UR_LEADERBOARD.
+ */
+public class GameScreen extends SuperScreen implements Screen {
+
+    //Determines if the game had been loaded from fullScreen
+    public boolean fullScreen;
+
+    float elapsedTime;
+
+    public GameRenderer getGameRenderer() {
+<span class="nc" id="L37">        return gameRenderer;</span>
+    }
+
+    // Renderers
+    GameRenderer gameRenderer;
+    UIRenderer uiRenderer;
+
+    //Used to fix incorrect initial Renderer size
+    public int startWidth;
+    public int startHeight;
+
+    //Determines if first tick of game has passed
+    public boolean FirstTick;
+
+    //Determines if end game has been already called
+    public boolean endedAlready;
+
+    /**
+     * Creates a new Game Screen
+     * @param mapName The name of the map that will be used
+     */
+    public GameScreen(String mapName){
+<span class="nc" id="L59">        super();</span>
+
+        // Moved from Main so that buildingCoinDict is reset each game
+<span class="nc" id="L62">        FileHandler.loadBuildings(&quot;buildingInfo&quot;,&quot;TextureAtlasMap&quot;);</span>
+<span class="nc" id="L63">        GameGlobals.TIME.setPaused(false);</span>
+<span class="nc" id="L64">        endedAlready = false;</span>
+<span class="nc" id="L65">        gameRenderer = new GameRenderer(mapName, skin);</span>
+<span class="nc" id="L66">        uiRenderer = new UIRenderer(skin, gameRenderer.getBuildingRenderer());</span>
+<span class="nc" id="L67">        elapsedTime = 0;</span>
+
+        //5 minutes
+<span class="nc" id="L70">        GameGlobals.resetGlobals(300);</span>
+<span class="nc" id="L71">        GameGlobals.BUILDINGS_MAP = new BuildingsMap(gameRenderer.getBackgroundRenderer());</span>
+<span class="nc" id="L72">    }</span>
+
+    @Override
+<span class="nc" id="L75">    public void show() {}</span>
+
+    /**
+     * Contains the game loop, renders game all game content from this loop
+     * @param delta Time since last frame
+     */
+    @Override
+    public void render(float delta) {
+        // Clear screen
+<span class="nc" id="L84">        Gdx.gl.glClearColor(0.1f, 0.1f, 0.4f, 1);</span>
+<span class="nc" id="L85">        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);</span>
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){</span>
+<span class="nc" id="L88">            pause();</span>
+        }
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if(!GameGlobals.TIME.isPaused()){</span>
+
+<span class="nc" id="L93">            elapsedTime += delta; // delta is the time elapsed since the last frame</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">            if (elapsedTime &gt;= 1) { // Increment counter every second</span>
+
+                // Calculate Game Stats
+<span class="nc" id="L97">                GameGlobals.TIME_REMAINING--;</span>
+
+<span class="nc" id="L99">                GameGlobals.MONEY.earn(GameGlobals.BUILDINGS_MAP.getPlacedBuildings(),</span>
+                                        EarnSchedule.DAILY);
+
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                for (int time : GameGlobals.EVENT.getEventTimes()) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                    if (GameGlobals.TIME_REMAINING == time) {</span>
+<span class="nc" id="L104">                        event();</span>
+                    }
+                }
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">                if (GameGlobals.EVENT.getEventQueue().get(GameGlobals.TIME_REMAINING) != null) {</span>
+<span class="nc" id="L109">                    GameGlobals.EVENT.getEventQueue().get(GameGlobals.TIME_REMAINING).run();</span>
+<span class="nc" id="L110">                    GameGlobals.EVENT.reduceEventQueue(GameGlobals.TIME_REMAINING);</span>
+                }
+
+                // Run twice per year at the start of each semester.
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                if (((GameGlobals.TIME_REMAINING % TimeHandler.SECONDS_PER_YEAR))</span>
+                    % TimeHandler.SECONDS_PER_SEMESTER == 0) {
+<span class="nc" id="L116">                    GameGlobals.MONEY.earn(GameGlobals.BUILDINGS_MAP.getPlacedBuildings(),</span>
+                                            EarnSchedule.SEMESTERLY);
+                }
+
+<span class="nc" id="L120">                elapsedTime = 0; // Reset elapsed time</span>
+            }
+        }
+
+        // Checks for and displays completed achievements
+<span class="nc" id="L125">        GameGlobals.ACHIEVEMENTS.checkAllAchievements();</span>
+<span class="nc" id="L126">        uiRenderer.displayAchievements();</span>
+
+        // End the game if satisfaction reaches 0
+<span class="nc bnc" id="L129" title="All 6 branches missed.">        if(GameGlobals.TIME_REMAINING &lt;= 0 &amp;&amp; !endedAlready || GameGlobals.SATISFACTION.getSatisfaction() == 0){</span>
+<span class="nc" id="L130">            endedAlready = true;</span>
+<span class="nc" id="L131">            endGame();</span>
+        }
+
+
+        // Draw
+<span class="nc" id="L136">        batch.begin();</span>
+<span class="nc" id="L137">        gameRenderer.render(delta);</span>
+<span class="nc" id="L138">        uiRenderer.render(delta);</span>
+<span class="nc" id="L139">        batch.end();</span>
+
+        //resizes to previous starting resolution
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        if (FirstTick){</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            if (fullScreen){</span>
+<span class="nc" id="L144">                GameConfigManager.setFullScreen();</span>
+            }
+            else {
+<span class="nc" id="L147">                Gdx.graphics.setWindowedMode(startWidth, startHeight);</span>
+            }
+<span class="nc" id="L149">            FirstTick = false;</span>
+        }
+<span class="nc" id="L151">    }</span>
+
+    /**
+     * Checks if window has been resized
+     */
+    @Override
+    public void resize(int width, int height) {
+<span class="nc" id="L158">        uiRenderer.resize(width, height);</span>
+<span class="nc" id="L159">        gameRenderer.resize(width, height);</span>
+<span class="nc" id="L160">    }</span>
+
+    /**
+     * Pauses the game and calls the UI renderer to display the pause menu UI.
+     */
+    @Override
+    public void pause() {
+<span class="nc" id="L167">        uiRenderer.pause(GameGlobals.TIME.isPaused());</span>
+<span class="nc" id="L168">    }</span>
+
+    /**
+     * Creates an event and calls the UI renderer to display it
+     */
+    public void event() {
+<span class="nc" id="L174">        uiRenderer.createEvent();</span>
+<span class="nc" id="L175">    }</span>
+
+    /**
+     * Creates an event and calls the UI renderer to display it
+     */
+    public void event(String eventName) {
+<span class="nc" id="L181">        uiRenderer.createEvent(eventName);</span>
+<span class="nc" id="L182">    }</span>
+
+    /**
+     * This is called when the game finishes, ie when the timer runs out
+     */
+    private void endGame(){
+        //Checks if game has been won
+<span class="nc" id="L189">        gameWon();</span>
+        //Checks achievements at the end of the game
+<span class="nc" id="L191">        GameGlobals.ACHIEVEMENTS.checkAllAchievements();</span>
+<span class="nc" id="L192">        uiRenderer.displayAchievements();</span>
+
+<span class="nc" id="L194">        GameGlobals.TIME.setPaused(true);</span>
+<span class="nc" id="L195">        GameGlobals.SATISFACTION.addBonus(GameGlobals.ACHIEVEMENTS.getBonus());</span>
+        // Checks if player won the game
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (GameGlobals.gameWon) {</span>
+<span class="nc" id="L198">            uiRenderer.endGame(&quot;You Win!&quot;);</span>
+        }
+        else{
+<span class="nc" id="L201">            uiRenderer.endGame(&quot;You Lose!&quot;);</span>
+        }
+<span class="nc" id="L203">    }</span>
+
+    /**
+     * Determines if the player won the game.
+     * @return true if the player won
+     */
+    private void gameWon(){
+<span class="nc bnc" id="L210" title="All 4 branches missed.">        if (GameGlobals.SATISFACTION.getSatisfaction() &gt; 50 &amp;&amp; GameGlobals.MONEY.getBalance() &gt;= 0) {</span>
+<span class="nc" id="L211">            GameGlobals.gameWon = true;</span>
+        }
+<span class="nc" id="L213">    }</span>
+
+    @Override
+<span class="nc" id="L216">    public void resume() { }</span>
+
+    @Override
+<span class="nc" id="L219">    public void hide() { }</span>
+
+
+    /**
+     * disposes Renderers being drawn for garbage collection
+     */
+    @Override
+    public void dispose() {
+<span class="nc" id="L227">        batch.dispose();</span>
+<span class="nc" id="L228">        gameRenderer.dispose();</span>
+<span class="nc" id="L229">        uiRenderer.dispose();</span>
+<span class="nc" id="L230">    }</span>
+
+    /**
+     * Sets ui Renderer to having input control
+     */
+    @Override
+    public void takeInput() {
+<span class="nc" id="L237">        uiRenderer.takeInput();</span>
+<span class="nc" id="L238">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

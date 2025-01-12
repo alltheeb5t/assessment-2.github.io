@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameGlobals.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.global</a> &gt; <span class="el_source">GameGlobals.java</span></div><h1>GameGlobals.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.global;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.vikingz.unitycoon.building.BuildingsMap;
+import com.vikingz.unitycoon.util.AchievementsHandler;
+import com.vikingz.unitycoon.util.MoneyHandler;
+import com.vikingz.unitycoon.util.SatisfactionHandler;
+import com.vikingz.unitycoon.events.EventHandler;
+import com.vikingz.unitycoon.util.TimeHandler;
+
+
+/**
+ * This class is used to store all the constants and global values
+ * that need to be accessed from different classes.
+ *
+ * This class only provides public static attributes and public
+ * static methods.
+ */
+<span class="nc" id="L21">public class GameGlobals {</span>
+
+    //Static stats of the current game
+<span class="fc" id="L24">    public static SatisfactionHandler SATISFACTION = new SatisfactionHandler();</span>
+<span class="fc" id="L25">    public static int STUDENTS = 0;</span>
+<span class="fc" id="L26">    public static int ACADEMIC_BUILDINGS_COUNT = 0;</span>
+<span class="fc" id="L27">    public static int ACCOMODATION_BUILDINGS_COUNT = 0;</span>
+<span class="fc" id="L28">    public static int RECREATIONAL_BUILDINGS_COUNT = 0;</span>
+<span class="fc" id="L29">    public static int FOOD_BUILDINGS_COUNT = 0;</span>
+<span class="fc" id="L30">    public static int TIME_REMAINING = 0;</span>
+    public static BuildingsMap BUILDINGS_MAP; // Instantiated within GameScreen when it is instantiated
+<span class="fc" id="L32">    public static AchievementsHandler ACHIEVEMENTS = new AchievementsHandler();</span>
+<span class="fc" id="L33">    public static MoneyHandler MONEY = new MoneyHandler();</span>
+<span class="fc" id="L34">    public static EventHandler EVENT = new EventHandler();</span>
+<span class="fc" id="L35">    public static TimeHandler TIME = new TimeHandler();</span>
+<span class="fc" id="L36">    public static boolean gameWon = false;</span>
+<span class="fc" id="L37">    public static boolean buildingAllowed = true; //Stops buildings from being built when false.</span>
+
+    //Size of the building SCREEN_BUILDING_SIZExSCREEN_BUILDING_SIZE
+    public static final int SCREEN_BUILDING_SIZE = 128;
+
+    // Load map textures
+<span class="fc" id="L43">    public static final Texture map1Texture = new Texture(Gdx.files.internal(&quot;png/map1Texture.png&quot;));</span>
+<span class="fc" id="L44">    public static final Texture map2Texture = new Texture(Gdx.files.internal(&quot;png/map2Texture.png&quot;));</span>
+<span class="fc" id="L45">    public static final Texture map3Texture = new Texture(Gdx.files.internal(&quot;png/map3Texture.png&quot;));</span>
+<span class="fc" id="L46">    public static final TextureRegionDrawable backGroundDrawable = new TextureRegionDrawable(</span>
+            new Texture(&quot;png/background.png&quot;));
+
+    //Loads map as a drawable to allow changing Image Actors to different images
+<span class="fc" id="L50">    public static final TextureRegionDrawable map1Draw = new TextureRegionDrawable(map1Texture);</span>
+<span class="fc" id="L51">    public static final TextureRegionDrawable map2Draw = new TextureRegionDrawable(map2Texture);</span>
+<span class="fc" id="L52">    public static final TextureRegionDrawable map3Draw = new TextureRegionDrawable(map3Texture);</span>
+<span class="fc" id="L53">    public static final TextureRegionDrawable[] mapArray = new TextureRegionDrawable[]{map1Draw, map2Draw, map3Draw};</span>
+
+
+    /**
+     * Resets the game globals to the original values.
+     * @param time The amount of time in minutes the game should last for
+     */
+    public static void resetGlobals(int time){
+<span class="fc" id="L61">        TIME_REMAINING = time;</span>
+<span class="fc" id="L62">        ACADEMIC_BUILDINGS_COUNT = 0;</span>
+<span class="fc" id="L63">        ACCOMODATION_BUILDINGS_COUNT = 0;</span>
+<span class="fc" id="L64">        RECREATIONAL_BUILDINGS_COUNT = 0;</span>
+<span class="fc" id="L65">        FOOD_BUILDINGS_COUNT = 0;</span>
+<span class="fc" id="L66">        SATISFACTION = new SatisfactionHandler();</span>
+<span class="fc" id="L67">        STUDENTS = 0;</span>
+<span class="fc" id="L68">        MONEY = new MoneyHandler();</span>
+<span class="fc" id="L69">        EVENT = new EventHandler();</span>
+<span class="fc" id="L70">        gameWon = false;</span>
+<span class="fc" id="L71">        ACHIEVEMENTS.resetAllAchievements();</span>
+<span class="fc" id="L72">        buildingAllowed = true;</span>
+<span class="fc" id="L73">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

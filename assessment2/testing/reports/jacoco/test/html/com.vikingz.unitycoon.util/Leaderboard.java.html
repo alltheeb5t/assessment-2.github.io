@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Leaderboard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.util</a> &gt; <span class="el_source">Leaderboard.java</span></div><h1>Leaderboard.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.util;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+/**
+ * This new class contains all the leaderboard functions.
+ * It was implemented to complete UR_ACHIEVEMENTS.
+ */
+<span class="nc" id="L12">public class Leaderboard {</span>
+    
+    static String leaderboardValue;
+<span class="fc" id="L15">    static File leaderboardFile = new File(&quot;leaderboard.txt&quot;);</span>
+<span class="fc" id="L16">    static int leaderboardPos = 0;</span>
+
+    /**
+     * With the ability to specify a file manually for testing
+     */
+    public static void saveLeaderboard() {
+<span class="nc" id="L22">        saveLeaderboard(leaderboardFile);</span>
+<span class="nc" id="L23">    }</span>
+
+    /**
+     * Saves leaderboard to text file.
+     */
+    public static void saveLeaderboard(File leaderboardFile) {
+        try {
+<span class="fc" id="L30">            FileWriter fileWriter = new FileWriter(leaderboardFile);</span>
+<span class="fc" id="L31">            fileWriter.write(leaderboardValue);</span>
+<span class="fc" id="L32">            fileWriter.close();</span>
+
+<span class="nc" id="L34">        } catch (IOException i) {</span>
+<span class="nc" id="L35">            System.out.println(&quot;FILE NOT FOUND&quot;);</span>
+<span class="fc" id="L36">        }</span>
+<span class="fc" id="L37">    }</span>
+
+
+    /**
+     * The ability to specify which file to load is for testing
+     */
+    public static void loadLeaderboard() {
+<span class="fc" id="L44">        loadLeaderboard(leaderboardFile);</span>
+<span class="fc" id="L45">    }</span>
+
+    /**
+     * Loads leaderboard from text file.
+     */
+    public static void loadLeaderboard(File leaderboardFile){
+
+<span class="fc" id="L52">        leaderboardValue = &quot;&quot;;</span>
+        try {
+<span class="fc" id="L54">            leaderboardFile.createNewFile();</span>
+<span class="fc" id="L55">            Scanner fileReader = new Scanner(leaderboardFile);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            while (fileReader.hasNextLine()) {</span>
+<span class="fc" id="L57">                leaderboardValue += fileReader.nextLine() + &quot;\n&quot;;</span>
+            }
+<span class="fc" id="L59">            fileReader.close();</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            if (leaderboardValue == &quot;&quot;) {</span>
+                //Puts 5 empty scores on the leaderboard if the file is empty.
+<span class="fc" id="L63">                leaderboardValue = &quot;0% -\n0% -\n0% -\n0% -\n0% -\n&quot;; </span>
+            }
+            //Updates the leaderboard removing the additional \n at the end.&quot;
+<span class="fc" id="L66">            leaderboardValue = leaderboardValue.substring(0, leaderboardValue.length()-1);</span>
+
+<span class="pc" id="L68">        } catch (IOException i) {}</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * Determines if a final score needs to be stored on the leaderboard.
+     * @return True if needs to be added to leaderboard. Else false.
+     */
+    public static Boolean isLeaderboardScore(int finalScore) {
+
+<span class="nc" id="L77">        leaderboardPos = 0; //Resets position on leaderboard</span>
+
+<span class="nc" id="L79">        String[] scores = leaderboardValue.split(&quot;\n&quot;);</span>
+        //Finds the 5th placed score stored on the leaderboard, removes % and converts to integer.  
+<span class="nc" id="L81">        String lowestSavedPercentage = scores[4].split(&quot; &quot;)[0];</span>
+<span class="nc" id="L82">        int lowestSavedScore = Integer.valueOf(lowestSavedPercentage.substring(0, </span>
+<span class="nc" id="L83">            lowestSavedPercentage.length()-1));</span>
+
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (lowestSavedScore &lt; finalScore) {</span>
+<span class="nc" id="L86">            return true;</span>
+        }
+
+<span class="nc" id="L89">        return false;</span>
+    }
+
+    /**
+     * Adds a given result to the leaderboard in the correct place.
+     * @param finalScore Final score which needs to be added.
+     * @param Username Username to be added with score.
+     */
+    public static void addScoreToLeaderBoard(int finalScore, String Username) {
+<span class="fc" id="L98">        String[] scores = leaderboardValue.split(&quot;\n&quot;);</span>
+<span class="fc" id="L99">        String updatedLeaderboardValue = &quot;&quot;;</span>
+<span class="fc" id="L100">        Boolean addedNewScore = false;</span>
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int i = 0; i &lt; scores.length; i++) {</span>
+            //Finds score stored on the leaderboard at place i, removes % and converts to integer.
+<span class="fc" id="L104">            String satisfactionPercentage = scores[i].split(&quot; &quot;)[0];</span>
+<span class="fc" id="L105">            int score = Integer.valueOf(satisfactionPercentage.substring(0, </span>
+<span class="fc" id="L106">                satisfactionPercentage.length()-1));</span>
+
+<span class="fc bfc" id="L108" title="All 4 branches covered.">            if (score &lt; finalScore &amp;&amp; !addedNewScore) {</span>
+<span class="fc" id="L109">                addedNewScore = true;</span>
+<span class="fc" id="L110">                updatedLeaderboardValue += Integer.toString(finalScore) + &quot;% &quot; + Username + &quot;\n&quot;;</span>
+<span class="fc" id="L111">                leaderboardPos = i + 1;</span>
+            }
+            
+            //Adds all except the previous 5th placed score to the leaderboard.
+<span class="fc bfc" id="L115" title="All 2 branches covered.">            if (i &lt; 4) {</span>
+<span class="fc" id="L116">                updatedLeaderboardValue += scores[i] + &quot;\n&quot;;</span>
+            }
+        }
+        
+        //Updates the leaderboard removing the additional \n at the end.&quot;
+<span class="fc" id="L121">        leaderboardValue = updatedLeaderboardValue.substring(0, updatedLeaderboardValue.length()-1);</span>
+<span class="fc" id="L122">    }</span>
+
+    public static String getLeaderboardValue() {
+<span class="fc" id="L125">        return leaderboardValue;</span>
+    }
+
+    public static int getLeaderboardPos() {
+<span class="nc" id="L129">        return leaderboardPos;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

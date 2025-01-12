@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FloodEvent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.events.eventfiles</a> &gt; <span class="el_source">FloodEvent.java</span></div><h1>FloodEvent.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.events.eventfiles;
+
+import com.vikingz.unitycoon.global.GameGlobals;
+
+/**
+ * This is a new class which creates a flood event object.
+ * It was implemented to complete UR_EVENTS.
+ */
+public class FloodEvent extends Event {
+
+    /**
+     * A negative event where a building on campus floods, breaking it.
+     */
+<span class="fc" id="L14">    public FloodEvent() {</span>
+
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        if (!buildingsMap.getPlacedBuildings().isEmpty()) {</span>
+<span class="fc" id="L17">            setMessage(&quot;Your University has flooded!\n\nOne of your buildings has been destroyed. Fortunately, you had insurance.&quot;);</span>
+
+<span class="fc" id="L19">            setLeftRun(() -&gt; buildingsMap.attemptBuildingDelete(buildingsMap.chooseRandomBuilding()));</span>
+
+        } else {
+<span class="fc" id="L22">            setMessage(&quot;Your campus has flooded!\n\nThe grass will recover don't worry.&quot;);</span>
+        }
+
+<span class="fc" id="L25">        GameGlobals.EVENT.incrementNegativeEvent();</span>
+<span class="fc" id="L26">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

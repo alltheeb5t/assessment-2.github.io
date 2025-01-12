@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TimeHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.util</a> &gt; <span class="el_source">TimeHandler.java</span></div><h1>TimeHandler.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.util;
+
+/**
+ * This class contains functions that we use to format time.
+ *
+ * Contains an inner class {@code Time} simply just to serve as
+ * a return type once the formatting is done.
+ * 
+ * This new class has been added to refactor the time infrastructure and to make it easier to implement 
+ * new features.
+ */
+<span class="fc" id="L12">public class TimeHandler {</span>
+
+    public static final int SECONDS_PER_YEAR = 100;
+    public static final int SECONDS_PER_SUMMER = 20;
+    public static final int SECONDS_PER_SEMESTER = 40;
+
+    public boolean isPaused() {
+<span class="nc" id="L19">        return isPaused;</span>
+    }
+
+    //Determines if the game is paused
+    boolean isPaused;
+
+    /**
+     * This class contains three attributes secs, mins and hrs.
+     *
+     * Only serves as a return type
+     */
+    public static class Time{
+
+        public int secs;
+        public int mins;
+        public int hrs;
+
+<span class="fc" id="L36">        public Time(int secs, int mins, int hrs){</span>
+<span class="fc" id="L37">            this.secs = secs;</span>
+<span class="fc" id="L38">            this.mins = mins;</span>
+<span class="fc" id="L39">            this.hrs = hrs;</span>
+<span class="fc" id="L40">        }</span>
+
+<span class="nc" id="L42">        public Time(){</span>
+<span class="nc" id="L43">            this.secs = 0;</span>
+<span class="nc" id="L44">            this.mins = 0;</span>
+<span class="nc" id="L45">            this.hrs = 0;</span>
+<span class="nc" id="L46">        }</span>
+
+        /**
+         * Returns the time in a min:second format where each value will always
+         * be padded to 2 digits
+         */
+        public String toString(){
+<span class="fc" id="L53">            return String.format(&quot;%02d&quot;, mins) + &quot;:&quot; + String.format(&quot;%02d&quot;, secs);</span>
+        }
+
+    }
+
+    /**
+     * Format time from seconds to minutes and seconds
+     * @param secs Time in seconds
+     * @return Time in minutes and seconds
+     */
+    public static Time secondsToMinSecs(int secs){
+<span class="fc" id="L64">        int m = secs/ 60;</span>
+<span class="fc" id="L65">        int s = secs % 60;</span>
+
+<span class="fc" id="L67">        return new Time(s, m, 0);</span>
+    }
+
+    /**
+     * Calculates the in game time which totals 3 years.
+     * Each year has two 40s semesters and a 20s summer.
+     * @param secs Time in seconds
+     * @return In game time as string written &quot;Year #, Semester #&quot;
+     */
+    public static String inGameTime(int secs) {
+<span class="fc" id="L77">        int timePassed = 300 - secs;</span>
+<span class="fc" id="L78">        int year = 0;</span>
+<span class="fc" id="L79">        String semester = &quot;&quot;;</span>
+
+<span class="fc" id="L81">        year = (timePassed / SECONDS_PER_YEAR) + 1;</span>
+
+        //Seconds passed in the current year.
+<span class="fc" id="L84">        int annualELapsedSeconds = timePassed - (year - 1) * SECONDS_PER_YEAR;</span>
+
+        //Calulates part of the year.
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (annualELapsedSeconds &lt; SECONDS_PER_SUMMER) {</span>
+<span class="fc" id="L88">            semester = &quot;Summer&quot;;</span>
+        }
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        else if (annualELapsedSeconds &lt; SECONDS_PER_SUMMER + SECONDS_PER_SEMESTER) {</span>
+<span class="fc" id="L91">            semester = &quot;Semester 1&quot;;</span>
+        }
+        else {
+<span class="fc" id="L94">            semester = &quot;Semester 2&quot;;</span>
+        }
+
+<span class="fc" id="L97">        return &quot;Year &quot; + String.valueOf(year) + &quot;, &quot; + semester;</span>
+    }
+
+    /**
+     * Sets the game to be paused
+     * @param isPaused boolean of if the game is paused
+     */
+    public void setPaused(boolean isPaused){
+<span class="fc" id="L105">        this.isPaused = isPaused;</span>
+<span class="fc" id="L106">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

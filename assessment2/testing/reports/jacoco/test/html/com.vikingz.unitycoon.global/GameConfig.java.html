@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.global</a> &gt; <span class="el_source">GameConfig.java</span></div><h1>GameConfig.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.global;
+
+import com.badlogic.gdx.Gdx;
+
+import java.io.Serializable;
+
+/**
+ * This class contains all of the config for the game, things such as width, height, sounds volume etc.
+ * This class is also used by the GameConfig Manager to save the current config so that when the user 
+ * reloads the game their settings are still present.
+ * 
+ * This is also a singleton class which means we instanciate it once and then that instance can be 
+ * fetched statically by calling GameConfig.getInstance() and then from this instance we can retrieve 
+ * settings. We have chosen to do this because by not making it static we are able to implement 
+ * Serializable which lets us save the GameConfig class as is without any other logic.
+ * 
+ * This class has been refactored slightly to make the code more readable, however it is largely unchanged.
+ */
+public class GameConfig implements Serializable{
+
+    // Constants for width and height MUST BE PUBLIC TO BE SERIALIZE
+    public int windowWidth;
+    public int windowHeight;
+    public boolean skipMenus;
+    public float SoundVolumeValue;
+    public float MusicVolumeValue;
+<span class="fc" id="L27">    static boolean VSync = false;</span>
+<span class="fc" id="L28">    public float guiSize = 1;</span>
+
+    // The single instance of GameConfig (eager initialization)
+<span class="fc" id="L31">    static GameConfig INSTANCE = new GameConfig(</span>
+        1792, 1008, false, 1f,1f); // Default values
+
+    // Private constructor to prevent instantiation from outside
+<span class="fc" id="L35">    private GameConfig(int width, int height, boolean skipMenus, float SoundVolumeValue, float MusicVolumeValue) {</span>
+<span class="fc" id="L36">        this.windowWidth = width;</span>
+<span class="fc" id="L37">        this.windowHeight = height;</span>
+<span class="fc" id="L38">        this.skipMenus = skipMenus;</span>
+<span class="fc" id="L39">        this.SoundVolumeValue = SoundVolumeValue;</span>
+<span class="fc" id="L40">        this.MusicVolumeValue = MusicVolumeValue;</span>
+<span class="fc" id="L41">    }</span>
+
+    // Sets VSync mode for game on or off
+    public static boolean setVSync(boolean enable){
+<span class="nc" id="L45">        VSync = enable;</span>
+<span class="nc" id="L46">        Gdx.graphics.setVSync(enable);</span>
+<span class="nc" id="L47">        return VSync;</span>
+    }
+    public static boolean getVSync(){
+<span class="nc" id="L50">        return VSync;</span>
+    }
+
+    public void setInstance(GameConfig conf){
+<span class="fc" id="L54">        INSTANCE = conf;</span>
+<span class="fc" id="L55">    }</span>
+
+
+    // Method to get the single instance of GameConfig
+    public static GameConfig getInstance() {
+<span class="fc" id="L60">        return INSTANCE;</span>
+    }
+
+    public int getWindowWidth() {
+<span class="nc" id="L64">        return windowWidth;</span>
+    }
+
+    public int getWindowHeight() {
+<span class="nc" id="L68">        return windowHeight;</span>
+    }
+
+    public boolean isSkipMenus() {
+<span class="nc" id="L72">        return skipMenus;</span>
+    }
+
+    public float getGuiSize() {
+<span class="nc" id="L76">        return guiSize;</span>
+    }
+
+    public void setGuiSize(float guiSize) {
+<span class="nc" id="L80">        this.guiSize = guiSize;</span>
+<span class="nc" id="L81">    }</span>
+}
+
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

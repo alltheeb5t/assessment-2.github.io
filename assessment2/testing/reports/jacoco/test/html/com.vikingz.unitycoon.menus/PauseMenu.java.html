@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PauseMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.menus</a> &gt; <span class="el_source">PauseMenu.java</span></div><h1>PauseMenu.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.menus;
+
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.vikingz.unitycoon.global.GameGlobals;
+import com.vikingz.unitycoon.screens.ScreenMultiplexer;
+
+/**
+ * This class represents a PauseMenu in the game.
+ * This class was refactored after the user-evaluation to improve the UI.
+ */
+public class PauseMenu extends Window {
+
+    /**
+     * Creates a new pause menu
+     * @param skin Contains the skin pack to be used with menu
+     */
+    public PauseMenu(Skin skin, Stage stage) {
+
+<span class="nc" id="L22">        super(&quot;&quot;, skin);</span>
+
+<span class="nc" id="L24">        this.setSize(1200, 500);</span>
+<span class="nc" id="L25">        this.setModal(true);</span>
+<span class="nc" id="L26">        this.setMovable(false);</span>
+<span class="nc" id="L27">        this.setResizable(false);</span>
+
+<span class="nc" id="L29">        Label message = new Label(&quot;\t\tGame Paused\nControls: right click removes buildings.&quot;, skin);</span>
+<span class="nc" id="L30">        message.setFontScale(3);</span>
+<span class="nc" id="L31">        this.add(message).padBottom(20).row();</span>
+<span class="nc" id="L32">        this.setBackground(GameGlobals.backGroundDrawable);</span>
+
+        //Displays buttons
+<span class="nc" id="L35">        Table buttons = new Table();</span>
+<span class="nc" id="L36">        TextButton achievementsBtn = new TextButton(&quot;Achievements&quot;, skin);</span>
+<span class="nc" id="L37">        TextButton continueBtn = new TextButton(&quot;Continue&quot;, skin);</span>
+<span class="nc" id="L38">        TextButton settingsBtn = new TextButton(&quot;Settings&quot;, skin);</span>
+<span class="nc" id="L39">        TextButton quitBtn = new TextButton(&quot;Main Menu&quot;, skin);</span>
+<span class="nc" id="L40">        buttons.add(continueBtn).width(425).pad(10);</span>
+<span class="nc" id="L41">        buttons.add(achievementsBtn).width(425).pad(10);</span>
+<span class="nc" id="L42">        buttons.row();</span>
+<span class="nc" id="L43">        buttons.add(settingsBtn).width(425).pad(10);</span>
+<span class="nc" id="L44">        buttons.add(quitBtn).width(425).pad(10);</span>
+<span class="nc" id="L45">        this.add(buttons);</span>
+
+<span class="nc" id="L47">        AchievementsMenu achievementsMenu = new AchievementsMenu(skin);</span>
+        
+<span class="nc" id="L49">        continueBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L52">                GameGlobals.TIME.setPaused(false);</span>
+<span class="nc" id="L53">                PauseMenu.this.remove();</span>
+<span class="nc" id="L54">            }</span>
+        });
+
+<span class="nc" id="L57">        achievementsBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L60">                achievementsMenu.update();</span>
+<span class="nc" id="L61">                achievementsMenu.setPosition((stage.getWidth() - achievementsMenu.getWidth()) / 2, (stage.getHeight() - achievementsMenu.getHeight()) / 2);</span>
+<span class="nc" id="L62">                stage.addActor(achievementsMenu);</span>
+<span class="nc" id="L63">            };</span>
+         });
+
+<span class="nc" id="L66">        settingsBtn.addListener(new ClickListener() {</span>
+            @Override
+<span class="nc" id="L68">            public void clicked(InputEvent event, float x, float y) {ScreenMultiplexer.openSettings(ScreenMultiplexer.Screens.GAME);}</span>
+        });
+
+<span class="nc" id="L71">        quitBtn.addListener(new ClickListener() {</span>
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+<span class="nc" id="L74">                ScreenMultiplexer.closeGame();</span>
+<span class="nc" id="L75">            }</span>
+        });
+<span class="nc" id="L77">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

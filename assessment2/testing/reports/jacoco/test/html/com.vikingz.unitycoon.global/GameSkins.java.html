@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameSkins.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.global</a> &gt; <span class="el_source">GameSkins.java</span></div><h1>GameSkins.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.global;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+
+/**
+ * This class is to simplify the Skin loading process, and allow us to make changes without 
+ * needing to edit every ui element.
+ 
+ * This class has been refactored slightly to make the code more readable, however it is largely unchanged.
+ */
+public class GameSkins {
+
+    // Skins loaded from assets
+    final Skin defaultSkin;
+    final Skin quantumSkin;
+
+    /**
+     * Constructor creates and loads GameSkins from assets files
+     */
+<span class="fc" id="L21">    public GameSkins(){</span>
+        //Default Theme Glassy ui
+<span class="fc" id="L23">        defaultSkin = new Skin(Gdx.files.internal(&quot;glassy-ui/skin/glassy-ui.json&quot;));</span>
+        //Theme Quantum Horizon ui
+<span class="fc" id="L25">        quantumSkin = new Skin(Gdx.files.internal(&quot;quantum-ui/skin/quantum-horizon-ui.json&quot;));</span>
+<span class="fc" id="L26">    }</span>
+
+
+    public Skin getDefaultSkin(){
+<span class="fc" id="L30">        return defaultSkin;</span>
+    }
+
+    public Skin getQuantumSkin(){
+<span class="nc" id="L34">        return quantumSkin;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

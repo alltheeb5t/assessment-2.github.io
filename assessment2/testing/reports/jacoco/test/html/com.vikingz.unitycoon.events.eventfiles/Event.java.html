@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Event.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">headless</a> &gt; <a href="index.source.html" class="el_package">com.vikingz.unitycoon.events.eventfiles</a> &gt; <span class="el_source">Event.java</span></div><h1>Event.java</h1><pre class="source lang-java linenums">package com.vikingz.unitycoon.events.eventfiles;
+
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.vikingz.unitycoon.building.BuildingsMap;
+import com.vikingz.unitycoon.global.GameGlobals;
+import com.vikingz.unitycoon.global.GameSkins;
+import com.vikingz.unitycoon.screens.GameScreen;
+import com.vikingz.unitycoon.screens.ScreenMultiplexer;
+
+/**
+ * This is an abstract class that contains the components that all other events use, and therefore 
+ * by creating them in here we de-clutter all the other event classes.
+ */
+public abstract class Event {
+
+    public GameScreen gameScreen;
+    public BuildingsMap buildingsMap;
+
+    public Skin skin;
+
+    public void setMessage(String message) {
+<span class="fc" id="L22">        this.message = message;</span>
+<span class="fc" id="L23">    }</span>
+
+    public void setLeftRun(Runnable leftRun) {
+<span class="fc" id="L26">        this.leftRun = leftRun;</span>
+<span class="fc" id="L27">    }</span>
+
+    public void setLeftText(String leftText) {
+<span class="fc" id="L30">        this.leftText = leftText;</span>
+<span class="fc" id="L31">    }</span>
+
+    public void setRightRun(Runnable rightRun) {
+<span class="fc" id="L34">        this.rightRun = rightRun;</span>
+<span class="fc" id="L35">    }</span>
+
+    public void setRightText(String rightText) {
+<span class="fc" id="L38">        this.rightText = rightText;</span>
+<span class="fc" id="L39">    }</span>
+
+    public void setNoChoice(boolean noChoice) {
+<span class="fc" id="L42">        this.noChoice = noChoice;</span>
+<span class="fc" id="L43">    }</span>
+
+    public String message;
+
+    public Runnable leftRun;
+    public String leftText;
+
+    public Runnable rightRun;
+    public String rightText;
+
+    public boolean noChoice;
+
+    /**
+     * Defines the SuperEvent constructor, which other events use for the base cases.
+     */
+<span class="fc" id="L58">    public Event() {</span>
+
+<span class="fc" id="L60">        gameScreen = ScreenMultiplexer.gameScreen;</span>
+<span class="fc" id="L61">        buildingsMap = GameGlobals.BUILDINGS_MAP;</span>
+
+<span class="fc" id="L63">        GameSkins skinLoader = new GameSkins();</span>
+<span class="fc" id="L64">        skin = skinLoader.getDefaultSkin();</span>
+
+<span class="fc" id="L66">        message = &quot;&quot;;</span>
+
+<span class="fc" id="L68">        leftRun = new Runnable() {</span>
+            @Override
+            public void run() {
+<span class="fc" id="L71">            }</span>
+        };
+<span class="fc" id="L73">        leftText = &quot;&quot;;</span>
+
+<span class="fc" id="L75">        rightRun = new Runnable() {</span>
+            @Override
+            public void run() {
+<span class="fc" id="L78">            }</span>
+        };
+<span class="fc" id="L80">        rightText = &quot;&quot;;</span>
+
+        //the default event is assumed to have no choice in options
+<span class="fc" id="L83">        noChoice = true;</span>
+<span class="fc" id="L84">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
