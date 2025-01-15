@@ -6,8 +6,8 @@ body {
   line-height: 1.5;
   color: #12FF12;
   margin: 0;
-  }
-  
+}
+
 header {
   background-color: #12FF12;
   font-weight: bold;
@@ -48,21 +48,25 @@ nav {
   justify-content: space-between;
 }
 
-.left-nav, .right-nav {
+.left-nav,
+.right-nav {
   display: flex;
 }
 
-.left-nav a, .right-nav a  {
+.left-nav a,
+.right-nav a {
   border-bottom: none;
   padding: 16px 32px;
 }
 
-.left-nav a:hover, .right-nav a:hover {
+.left-nav a:hover,
+.right-nav a:hover {
   color: #12FF12;
   background-color: #494949;
 }
 
-.left-nav a.active, .right-nav a.active {
+.left-nav a.active,
+.right-nav a.active {
   background-color: #494949;
   font-weight: bold;
 }
