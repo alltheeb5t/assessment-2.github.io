@@ -1,5 +1,4 @@
 body {
-  min-width: 1088px;
   background-color: #121212;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 16;
@@ -55,6 +54,9 @@ nav {
 
 .left-nav a,
 .right-nav a {
+  flex: 1;
+  white-space: nowrap;
+  text-align: center;
   border-bottom: none;
   padding: 16px 32px;
 }
@@ -137,5 +139,15 @@ a:hover {
 @keyframes blink {
   50% {
     border-color: transparent;
+  }
+}
+
+@media (max-width: 1073px) {
+  body {
+    min-width: 698px;
+  }
+
+  nav {
+    flex-direction: column;
   }
 }
